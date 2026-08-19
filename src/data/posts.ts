@@ -39,7 +39,7 @@ export const samplePosts: Post[] = [
     body: "土曜なら空いています。力仕事は得意です。",
     place: "桐生",
     status: "募集中",
-    tagLabelIds: ["l-campus-kiryu", "l-fac-koga3"],
+    tagLabelIds: ["l-campus-kiryu", "l-faculty-rikou", "l-grade-3"],
     createdAt: "2026-08-12T08:00:00+09:00",
   },
   {
@@ -51,7 +51,7 @@ export const samplePosts: Post[] = [
     body: "木曜3限、記録をつけてくれる人を探しています。お礼は昼食で。",
     place: "荒牧",
     status: "募集中",
-    tagLabelIds: ["l-fac-joho3", "l-sub-toukei"],
+    tagLabelIds: ["l-faculty-joho", "l-grade-3", "l-sub-toukei"],
     createdAt: "2026-08-12T13:00:00+09:00",
   },
   {
@@ -63,7 +63,7 @@ export const samplePosts: Post[] = [
     body: "半年間の交換留学に行っていました。費用や単位振替の話ができます。",
     place: "オンライン可",
     status: "募集中",
-    tagLabelIds: ["l-int-ryugaku", "l-fac-joho3"],
+    tagLabelIds: ["l-int-ryugaku", "l-faculty-joho", "l-grade-3"],
     createdAt: "2026-08-13T18:00:00+09:00",
   },
   {
@@ -75,7 +75,7 @@ export const samplePosts: Post[] = [
     body: "教育実習の忙しさや、両立の仕方を教えてください。",
     place: "オンライン可",
     status: "募集中",
-    tagLabelIds: ["l-int-kyoshi", "l-fac-kyoiku2"],
+    tagLabelIds: ["l-int-kyoshi", "l-faculty-kyoiku", "l-grade-2"],
     createdAt: "2026-08-13T20:00:00+09:00",
   },
   {
@@ -124,7 +124,7 @@ export const samplePosts: Post[] = [
     body: "見学のタイミングや聞くべきことを教えてほしいです。",
     place: "オンライン可",
     status: "募集中",
-    tagLabelIds: ["l-int-daigakuin", "l-fac-joho3"],
+    tagLabelIds: ["l-int-daigakuin", "l-faculty-joho", "l-grade-3"],
     createdAt: "2026-08-15T09:00:00+09:00",
   },
   {
@@ -161,7 +161,7 @@ export const samplePosts: Post[] = [
     price: 500,
     place: "桐生",
     status: "募集中",
-    tagLabelIds: ["l-fac-koga3", "l-campus-kiryu"],
+    tagLabelIds: ["l-faculty-rikou", "l-grade-3", "l-campus-kiryu"],
     createdAt: "2026-08-16T09:00:00+09:00",
   },
   {

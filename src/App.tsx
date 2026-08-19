@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react"
 import type { PostStatus, Reply } from "./types"
+import { AuthProvider, useAuth } from "./context/AuthContext"
 import { ViewerProvider, useViewer } from "./context/ViewerContext"
 import { usePosts } from "./hooks/usePosts"
 import { useReplies } from "./hooks/useReplies"
@@ -7,13 +8,14 @@ import { sampleLabels } from "./data/labels"
 import { sampleAnnouncements } from "./data/announcements"
 import { resetToSampleData } from "./lib/storage"
 import { AnnouncementBanner } from "./components/AnnouncementBanner"
-import { ViewerSwitcher } from "./components/ViewerSwitcher"
+import { LoginForm } from "./components/LoginForm"
 import { PostForm } from "./components/PostForm"
 import { Timeline } from "./components/Timeline"
 import "./App.css"
 
 function AppInner() {
   const { viewer } = useViewer()
+  const { logout } = useAuth()
   const { posts, addPost, updatePost } = usePosts()
   const { replies, addReply } = useReplies()
 
@@ -55,7 +57,10 @@ function AppInner() {
       <header className="app__header">
         <h1 className="app__heading">学内タイムライン</h1>
         <div className="app__header-controls">
-          <ViewerSwitcher />
+          <span className="app__current-user">{viewer.name} としてログイン中</span>
+          <button type="button" onClick={logout}>
+            ログアウト
+          </button>
           <button type="button" className="app__reset" onClick={handleReset}>
             サンプルデータに戻す
           </button>
@@ -84,10 +89,24 @@ function AppInner() {
   )
 }
 
-export default function App() {
+function AppGate() {
+  const { currentUser } = useAuth()
+
+  if (!currentUser) {
+    return <LoginForm />
+  }
+
   return (
     <ViewerProvider>
       <AppInner />
     </ViewerProvider>
+  )
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppGate />
+    </AuthProvider>
   )
 }

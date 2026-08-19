@@ -1,32 +1,38 @@
-import { createContext, useContext, useMemo, useState } from "react"
+import { createContext, useContext, useMemo } from "react"
 import type { ReactNode } from "react"
 import type { User } from "../types"
-import { sampleUsers } from "../data/users"
+import { useAuth } from "./AuthContext"
 
 /**
- * ログイン機能を作らない代わりに、「今アプリを誰として見ているか」を
- * 画面上で切り替えられるようにする（企画書 §10）。
+ * 「今アプリを誰として見ているか」。
  *
- * §7 の非公開の返信や、B のラベル絞り込みは、ここで選ばれている
- * viewer を基準に判定する。
+ * 以前はログイン機能の代わりにドロップダウンで自由に切り替えていたが、
+ * ログイン機能を実装したことで、viewer はログイン中のアカウントと
+ * 常に一致するようにした。人を切り替えたいときはログアウトして
+ * 別のアカウントでログインし直す（本物の認証に近い動き）。
+ *
+ * PostForm / PostCard / ReplyThread など既存の利用側は
+ * useViewer() の形をそのまま使えるよう、公開インターフェースは変えていない。
  */
 interface ViewerContextValue {
   viewer: User
   viewerId: string
-  setViewerId: (id: string) => void
-  users: User[]
 }
 
 const ViewerContext = createContext<ViewerContextValue | null>(null)
 
+/** ログイン済み（currentUser がある）ときだけ使う想定 */
 export function ViewerProvider({ children }: { children: ReactNode }) {
-  const [viewerId, setViewerId] = useState<string>(sampleUsers[0].id)
+  const { currentUser } = useAuth()
 
   const value = useMemo<ViewerContextValue>(() => {
-    const viewer =
-      sampleUsers.find((u) => u.id === viewerId) ?? sampleUsers[0]
-    return { viewer, viewerId: viewer.id, setViewerId, users: sampleUsers }
-  }, [viewerId])
+    if (!currentUser) {
+      throw new Error(
+        "ViewerProvider はログイン後（currentUser がある状態）でのみ使ってください",
+      )
+    }
+    return { viewer: currentUser, viewerId: currentUser.id }
+  }, [currentUser])
 
   return (
     <ViewerContext.Provider value={value}>{children}</ViewerContext.Provider>
