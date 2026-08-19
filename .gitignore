@@ -1,0 +1,20 @@
+# 依存関係
+node_modules
+
+# ビルド成果物
+dist
+dist-ssr
+*.local
+
+# エディタ
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# ログ
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store

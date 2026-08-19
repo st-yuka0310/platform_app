@@ -1,0 +1,419 @@
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px 12px 64px;
+}
+
+.app__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.app__heading {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.app__header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.viewer-switcher select {
+  margin: 0 4px;
+  padding: 2px 4px;
+}
+
+.app__reset {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.app__disclaimer {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 4px 0 16px;
+}
+
+/* --- お知らせ --- */
+
+.announcement-banner {
+  background: #fff8e6;
+  border: 1px solid #e8d99a;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+
+.announcement-banner__heading {
+  font-size: 0.9rem;
+  margin: 0 0 6px;
+}
+
+.announcement-banner__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.announcement-banner__title {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.announcement-banner__date {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.announcement-banner__body {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* --- 投稿フォーム --- */
+
+.post-form__open {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  border: 1px dashed var(--accent);
+  border-radius: 10px;
+  background: var(--accent-weak);
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.post-form {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.post-form__axis {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.post-form__axis legend {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 0;
+}
+
+.post-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.post-form__field input,
+.post-form__field textarea {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: var(--text);
+}
+
+.post-form__tags {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.post-form__tags legend {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 0;
+}
+
+.post-form__tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.post-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.post-form__actions button {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.post-form__actions button[type="submit"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* --- ラベル絞り込み --- */
+
+.label-filter-bar {
+  margin-bottom: 8px;
+}
+
+.label-filter-bar__heading {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+}
+
+.label-filter-bar__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.label-chip {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.label-chip--on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.label-filter-bar__clear {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.timeline__mix-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+/* --- タイムライン --- */
+
+.timeline__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timeline__empty {
+  color: var(--text-muted);
+  padding: 24px 0;
+  text-align: center;
+}
+
+.post-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.post-card--done {
+  opacity: 0.6;
+}
+
+.post-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.post-card__status {
+  color: var(--text-muted);
+  font-weight: normal;
+}
+
+.post-card__title {
+  margin: 4px 0;
+  font-size: 1rem;
+}
+
+.post-card__price {
+  color: var(--text-muted);
+  font-weight: normal;
+  font-size: 0.9rem;
+}
+
+.post-card__body {
+  margin: 4px 0;
+  font-size: 0.9rem;
+}
+
+.post-card__meta {
+  margin: 4px 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.post-card__tags {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.post-card__tag {
+  font-size: 0.72rem;
+  background: var(--accent-weak);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.post-card__status-control {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 6px 0;
+}
+
+/* --- 返信 --- */
+
+.reply-thread {
+  margin-top: 8px;
+  border-top: 1px dashed var(--border);
+  padding-top: 8px;
+}
+
+.reply-thread__toggle {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.reply-thread__list {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reply-thread__empty {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.reply-thread__item {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 0.85rem;
+}
+
+.reply-thread__author {
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.reply-thread__badge {
+  font-size: 0.7rem;
+  border-radius: 999px;
+  padding: 1px 6px;
+  margin-right: 6px;
+}
+
+.reply-thread__badge--private {
+  background: #f4e3e0;
+  color: var(--danger);
+}
+
+.reply-thread__badge--public {
+  background: var(--accent-weak);
+  color: var(--accent);
+}
+
+.reply-thread__date {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.reply-thread__text {
+  margin: 4px 0 0;
+}
+
+.reply-thread__form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reply-thread__form textarea {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  resize: vertical;
+}
+
+.reply-thread__form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  gap: 8px;
+}
+
+.reply-thread__form-row button {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+}

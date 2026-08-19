@@ -1,0 +1,31 @@
+:root {
+  color-scheme: light;
+  font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", system-ui,
+    sans-serif;
+  --bg: #f5f5f3;
+  --surface: #ffffff;
+  --border: #e0ded8;
+  --text: #222222;
+  --text-muted: #6b6b6b;
+  --accent: #2f6f4f;
+  --accent-weak: #e4efe8;
+  --danger: #b3492f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
