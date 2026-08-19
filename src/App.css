@@ -83,15 +83,49 @@
   color: var(--text-muted);
 }
 
+/* --- セクション区切り --- */
+/* 投稿フォームとタイムラインを、同じ画面内で見た目としてはっきり分ける。
+   企画書 §5 の「画面は1つ」は保ったまま、区切りだけを強める。 */
+
+.app__section {
+  margin-bottom: 20px;
+}
+
+.app__section-heading {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+  padding-left: 2px;
+}
+
+.app__section--post {
+  background: var(--accent-weak);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 14px 6px;
+}
+
+.app__section--post .app__section-heading {
+  color: var(--accent);
+}
+
+.app__section--timeline {
+  background: transparent;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
 /* --- 投稿フォーム --- */
 
 .post-form__open {
   width: 100%;
   padding: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   border: 1px dashed var(--accent);
   border-radius: 10px;
-  background: var(--accent-weak);
+  background: var(--surface);
   color: var(--accent);
   font-weight: 600;
   cursor: pointer;
@@ -102,7 +136,7 @@
   background: var(--surface);
   border-radius: 10px;
   padding: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -123,6 +157,30 @@
   padding: 0;
 }
 
+.post-form__chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.axis-chip {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 0.85rem;
+  background: var(--surface);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.axis-chip--on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
 .post-form__field {
   display: flex;
   flex-direction: column;
@@ -137,6 +195,32 @@
   border-radius: 6px;
   padding: 6px 8px;
   color: var(--text);
+}
+
+.post-form__field input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.post-form__error {
+  color: var(--danger);
+  font-size: 0.78rem;
+}
+
+/* 「モノ」以外を選んだときに金額欄をふっと閉じる */
+.post-form__price {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.2s ease, opacity 0.15s ease;
+}
+
+.post-form__price > * {
+  overflow: hidden;
+}
+
+.post-form__price--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
 }
 
 .post-form__tags {

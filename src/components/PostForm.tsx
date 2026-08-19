@@ -29,6 +29,15 @@ export function PostForm({
   const [price, setPrice] = useState("")
   const [place, setPlace] = useState("")
   const [tagLabelIds, setTagLabelIds] = useState<string[]>([])
+  const [showErrors, setShowErrors] = useState(false)
+
+  // 金額欄は「モノ」のときだけ意味を持つので、それ以外では検証しない
+  const priceError =
+    kind === "モノ" && price !== "" && Number(price) < 0
+      ? "0円以上を入力してください"
+      : null
+
+  const isValid = title.trim() !== "" && place.trim() !== "" && priceError === null
 
   function toggleTag(labelId: string) {
     setTagLabelIds((prev) =>
@@ -46,11 +55,15 @@ export function PostForm({
     setPrice("")
     setPlace("")
     setTagLabelIds([])
+    setShowErrors(false)
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!title.trim() || !place.trim()) return
+    if (!isValid) {
+      setShowErrors(true)
+      return
+    }
 
     onAddPost({
       id: `p-${crypto.randomUUID()}`,
@@ -83,40 +96,57 @@ export function PostForm({
   }
 
   return (
-    <form className="post-form" onSubmit={handleSubmit}>
+    <form className="post-form" onSubmit={handleSubmit} noValidate>
       <fieldset className="post-form__axis">
         <legend>どちらですか</legend>
-        {DIRECTIONS.map((d) => (
-          <label key={d}>
-            <input
-              type="radio"
-              name="direction"
-              checked={direction === d}
-              onChange={() => setDirection(d)}
-            />
-            {d}
-          </label>
-        ))}
+        <div className="post-form__chip-group">
+          {DIRECTIONS.map((d) => (
+            <button
+              key={d}
+              type="button"
+              className={
+                direction === d
+                  ? "axis-chip axis-chip--on"
+                  : "axis-chip axis-chip--off"
+              }
+              aria-pressed={direction === d}
+              onClick={() => setDirection(d)}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
       </fieldset>
 
       <fieldset className="post-form__axis">
         <legend>何についてですか</legend>
-        {KINDS.map((k) => (
-          <label key={k}>
-            <input
-              type="radio"
-              name="kind"
-              checked={kind === k}
-              onChange={() => setKind(k)}
-            />
-            {k}
-          </label>
-        ))}
+        <div className="post-form__chip-group">
+          {KINDS.map((k) => (
+            <button
+              key={k}
+              type="button"
+              className={
+                kind === k ? "axis-chip axis-chip--on" : "axis-chip axis-chip--off"
+              }
+              aria-pressed={kind === k}
+              onClick={() => setKind(k)}
+            >
+              {k}
+            </button>
+          ))}
+        </div>
       </fieldset>
 
       <label className="post-form__field">
         タイトル
-        <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          aria-invalid={showErrors && !title.trim()}
+        />
+        {showErrors && !title.trim() && (
+          <span className="post-form__error">タイトルを入力してください</span>
+        )}
       </label>
 
       <label className="post-form__field">
@@ -124,17 +154,28 @@ export function PostForm({
         <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={3} />
       </label>
 
-      {kind === "モノ" && (
+      <div
+        className={
+          kind === "モノ"
+            ? "post-form__price post-form__price--open"
+            : "post-form__price"
+        }
+      >
         <label className="post-form__field">
           金額（円）
           <input
             type="number"
             min={0}
+            step={1}
             value={price}
             onChange={(e) => setPrice(e.target.value)}
+            aria-invalid={showErrors && priceError !== null}
           />
+          {showErrors && priceError && (
+            <span className="post-form__error">{priceError}</span>
+          )}
         </label>
-      )}
+      </div>
 
       <label className="post-form__field">
         受け渡し・やり取りの場所
@@ -142,8 +183,11 @@ export function PostForm({
           value={place}
           onChange={(e) => setPlace(e.target.value)}
           placeholder="荒牧 / オンライン可 など"
-          required
+          aria-invalid={showErrors && !place.trim()}
         />
+        {showErrors && !place.trim() && (
+          <span className="post-form__error">受け渡し・やり取りの場所を入力してください</span>
+        )}
       </label>
 
       <fieldset className="post-form__tags">

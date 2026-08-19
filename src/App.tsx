@@ -68,18 +68,24 @@ function AppInner() {
 
       <AnnouncementBanner announcements={sampleAnnouncements} />
 
-      <PostForm labels={sampleLabels} onAddPost={addPost} />
+      <section className="app__section app__section--post" aria-label="投稿する">
+        <h2 className="app__section-heading">投稿する</h2>
+        <PostForm labels={sampleLabels} onAddPost={addPost} />
+      </section>
 
-      <Timeline
-        posts={posts}
-        replies={replies}
-        labels={sampleLabels}
-        selectedLabelIds={selectedLabelIds}
-        onToggleLabel={toggleLabel}
-        onClearAll={clearAll}
-        onAddReply={handleAddReply}
-        onChangeStatus={handleChangeStatus}
-      />
+      <section className="app__section app__section--timeline" aria-label="タイムライン">
+        <h2 className="app__section-heading">タイムライン</h2>
+        <Timeline
+          posts={posts}
+          replies={replies}
+          labels={sampleLabels}
+          selectedLabelIds={selectedLabelIds}
+          onToggleLabel={toggleLabel}
+          onClearAll={clearAll}
+          onAddReply={handleAddReply}
+          onChangeStatus={handleChangeStatus}
+        />
+      </section>
     </div>
   )
 }
