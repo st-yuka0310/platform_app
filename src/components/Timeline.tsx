@@ -1,8 +1,7 @@
 /**
  * 担当: B（タイムラインの表示と、ラベルによる絞り込み）
  *
- * ラベルで絞り込んだ投稿に、Cの担当（範囲外を2割まぜる）を適用してから並べる。
- * 「提供します」「求めています」の2タブに分けて表示する。
+ * ラベルで絞り込んだ投稿を、「提供します」「求めています」の2タブに分けて表示する。
  *
  * 「🔍 ラベルを探す」はこの2つとは階層を分けている。提供します/求めていますは
  * 中身を見るタブ（コンテンツビュー）だが、ラベルを探すのは中身を見るための
@@ -12,11 +11,15 @@
  *
  * 当初は「画面にタブは増やさない」（企画書 §5）方針だったが、投稿の見やすさを
  * 優先してタブ形式に変更した（README §5 参照）。
+ *
+ * 「範囲外の投稿を2割まぜる」仕組み（企画書 §8）は、提供します/求めています
+ * のタブ分けとかみ合わせたときの不具合（方向を区別せずに20%を選ぶため、
+ * 選ばれた側に偏ると片方のタブが0件になりうる）が見つかり、直すより先に
+ * 削除した（README §8 参照）。
  */
 import { useMemo, useState } from "react"
 import type { Label, Post, PostDirection, PostStatus, Reply } from "../types"
 import { filterPostsByLabels } from "../lib/timelineFilter"
-import { mixInOutsideRange } from "../lib/timelineMix"
 import { LabelSearch } from "./LabelSearch"
 import { LabelFilterBar } from "./LabelFilterBar"
 import { PostCard } from "./PostCard"
@@ -27,7 +30,7 @@ export function Timeline({
   labels,
   selectedLabelIds,
   onToggleLabel,
-  onClearAll,
+  onToggleAll,
   onAddReply,
   onChangeStatus,
   enrolledCourseLabelIds,
@@ -40,7 +43,8 @@ export function Timeline({
   labels: Label[]
   selectedLabelIds: string[]
   onToggleLabel: (labelId: string) => void
-  onClearAll: () => void
+  /** 渡したidの集合を、全部選択済みなら全解除、そうでなければ全選択する */
+  onToggleAll: (ids: string[]) => void
   onAddReply: (reply: Reply) => void
   onChangeStatus: (postId: string, status: PostStatus) => void
   enrolledCourseLabelIds: string[]
@@ -54,7 +58,6 @@ export function Timeline({
     [posts],
   )
 
-  const [mixEnabled, setMixEnabled] = useState(true)
   const [activeTab, setActiveTab] = useState<PostDirection>("提供します")
   const [searchOpen, setSearchOpen] = useState(false)
 
@@ -64,19 +67,12 @@ export function Timeline({
     [activePosts],
   )
 
-  const matched = useMemo(
+  const displayed = useMemo(
     () => filterPostsByLabels(sorted, selectedLabelIds),
     [sorted, selectedLabelIds],
   )
 
-  const displayed = useMemo(() => {
-    if (!mixEnabled || selectedLabelIds.length === 0) return matched
-    return mixInOutsideRange(matched, sorted)
-  }, [matched, sorted, mixEnabled, selectedLabelIds])
-
-  // 「提供します」「求めています」で見た目を分ける。
-  // 混ぜる処理のあと（displayedが確定したあと）に分けるだけなので、
-  // timelineFilter.ts / timelineMix.ts はどちらも変更していない。
+  // 「提供します」「求めています」で見た目を分ける
   const offering = useMemo(
     () => displayed.filter((p) => p.direction === "提供します"),
     [displayed],
@@ -130,23 +126,12 @@ export function Timeline({
         labels={labels}
         selectedLabelIds={selectedLabelIds}
         onToggle={onToggleLabel}
-        onClearAll={onClearAll}
+        onToggleAll={onToggleAll}
         enrolledCourseLabelIds={enrolledCourseLabelIds}
         onToggleEnrolledCourses={onToggleEnrolledCourses}
         myClubLabelIds={myClubLabelIds}
         onToggleMyClubs={onToggleMyClubs}
       />
-
-      {selectedLabelIds.length > 0 && (
-        <label className="timeline__mix-toggle">
-          <input
-            type="checkbox"
-            checked={mixEnabled}
-            onChange={(e) => setMixEnabled(e.target.checked)}
-          />
-          範囲外の投稿を混ぜる
-        </label>
-      )}
 
       <ul className="timeline__list">
         {activePostsForTab.length === 0 && (

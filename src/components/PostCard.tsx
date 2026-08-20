@@ -4,7 +4,7 @@
  * 投稿1件分の表示。企画書 §5 のタイムライン1件ぶんにあたる。
  */
 import type { Post, PostStatus, Reply } from "../types"
-import { labelName, userName, formatDate } from "../lib/format"
+import { labelName, displayAuthorName, formatDate } from "../lib/format"
 import { useViewer } from "../context/ViewerContext"
 import { ReplyThread } from "./ReplyThread"
 
@@ -49,7 +49,11 @@ export function PostCard({
       <p className="post-card__body">{post.body}</p>
 
       <p className="post-card__meta">
-        {[post.place, userName(post.authorId), formatDate(post.createdAt)]
+        {[
+          post.place,
+          displayAuthorName(post.authorId, post.isAnonymous, viewerId),
+          formatDate(post.createdAt),
+        ]
           .filter((part) => part !== "")
           .join("／")}
       </p>

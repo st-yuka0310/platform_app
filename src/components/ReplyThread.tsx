@@ -3,11 +3,15 @@
  *
  * 投稿への返信を表示・投稿する部分（企画書 §7）。
  * 「誰として見ているか」によって、非公開の返信の見え方が変わる。
+ *
+ * 匿名（isAnonymous）は、公開/非公開（isPrivate）とは別軸。公開の返信でも
+ * 匿名にできるし、非公開の返信でも実名で書ける。匿名にしても authorId自体は
+ * 変わらないので、非公開の返信の可視性判定（visibleRepliesFor）には影響しない。
  */
 import { useState } from "react"
 import type { Post, Reply } from "../types"
 import { visibleRepliesFor } from "../lib/replyVisibility"
-import { userName, formatDateTime } from "../lib/format"
+import { displayAuthorName, formatDateTime } from "../lib/format"
 import { useViewer } from "../context/ViewerContext"
 
 export function ReplyThread({
@@ -23,6 +27,7 @@ export function ReplyThread({
   const [open, setOpen] = useState(false)
   const [body, setBody] = useState("")
   const [isPrivate, setIsPrivate] = useState(true)
+  const [isAnonymous, setIsAnonymous] = useState(false)
 
   const visible = visibleRepliesFor(replies, post, viewerId)
 
@@ -35,6 +40,7 @@ export function ReplyThread({
       authorId: viewerId,
       body: body.trim(),
       isPrivate,
+      isAnonymous,
       createdAt: new Date().toISOString(),
     })
     setBody("")
@@ -59,7 +65,7 @@ export function ReplyThread({
             {visible.map((r) => (
               <li key={r.id} className="reply-thread__item">
                 <span className="reply-thread__author">
-                  {userName(r.authorId)}
+                  {displayAuthorName(r.authorId, r.isAnonymous, viewerId)}
                 </span>
                 <span
                   className={
@@ -93,6 +99,14 @@ export function ReplyThread({
                   onChange={(e) => setIsPrivate(e.target.checked)}
                 />
                 非公開にする（投稿者と自分だけに見せる）
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={isAnonymous}
+                  onChange={(e) => setIsAnonymous(e.target.checked)}
+                />
+                匿名で返信する
               </label>
               <button type="submit" disabled={!body.trim()}>
                 返信する

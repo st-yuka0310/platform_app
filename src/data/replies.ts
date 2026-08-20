@@ -48,6 +48,8 @@ export const sampleReplies: Reply[] = [
     authorId: "u1",
     body: "実習期間中はバイトを減らしている人が多いと聞きました。",
     isPrivate: false,
+    // 匿名返信のデモ用。公開の返信でも名前を出さずに答えられることを示す
+    isAnonymous: true,
     createdAt: "2026-08-14T09:00:00+09:00",
   },
 

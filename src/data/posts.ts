@@ -81,6 +81,8 @@ const rawSamplePosts: Omit<Post, "updatedAt">[] = [
     status: "募集中",
     tagLabelIds: ["l-int-kyoshi", "l-faculty-kyoiku", "l-grade-2"],
     createdAt: "2026-08-13T20:00:00+09:00",
+    // 匿名投稿のデモ用。少し聞きづらい質問は匿名でも投稿できることを示す
+    isAnonymous: true,
   },
   {
     id: "p7",

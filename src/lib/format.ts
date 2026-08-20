@@ -17,6 +17,21 @@ export function userName(userId: string): string {
   return fromAccount?.name ?? "不明な利用者"
 }
 
+/**
+ * 投稿・返信の表示名を、匿名かどうかと「今見ている本人かどうか」を踏まえて決める。
+ * 自分自身が書いたものは、匿名にしていても自分には実名のまま見える
+ * （authorIdは変わらないので、内部の権限判定・非公開の返信の可視性には
+ * 一切影響しない。表示だけを変えている）。
+ */
+export function displayAuthorName(
+  authorId: string,
+  isAnonymous: boolean | undefined,
+  viewerId: string,
+): string {
+  if (isAnonymous && authorId !== viewerId) return "匿名"
+  return userName(authorId)
+}
+
 export function formatDate(iso: string): string {
   const d = new Date(iso)
   return `${d.getMonth() + 1}/${d.getDate()}`

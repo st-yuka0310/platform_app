@@ -36,6 +36,7 @@ export function PostEditForm({
   const [place, setPlace] = useState(post.place)
   const [status, setStatus] = useState<PostStatus>(post.status)
   const [tagLabelIds, setTagLabelIds] = useState<string[]>(post.tagLabelIds)
+  const [isAnonymous, setIsAnonymous] = useState(post.isAnonymous ?? false)
   const [showErrors, setShowErrors] = useState(false)
 
   const priceError =
@@ -77,6 +78,7 @@ export function PostEditForm({
       status,
       tagLabelIds,
       updatedAt: new Date().toISOString(),
+      isAnonymous,
     })
   }
 
@@ -230,6 +232,15 @@ export function PostEditForm({
           )
         })}
       </fieldset>
+
+      <label className="post-form__anonymous">
+        <input
+          type="checkbox"
+          checked={isAnonymous}
+          onChange={(e) => setIsAnonymous(e.target.checked)}
+        />
+        匿名で投稿する（自分以外には名前を表示しません）
+      </label>
 
       <div className="post-form__actions post-manager__form-actions">
         <button type="button" className="post-manager__delete" onClick={onDelete}>

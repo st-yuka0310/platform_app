@@ -82,6 +82,12 @@ export interface Post {
   createdAt: string
   /** 最終編集日時。新規投稿時は createdAt と同じ値にする */
   updatedAt: string
+  /**
+   * 匿名で投稿するかどうか。trueのとき、投稿者本人以外には名前を表示しない
+   * （authorId自体は変わらないので、状態変更・編集などの権限判定には影響しない）。
+   * 未設定は false 扱い（匿名機能の追加前からある投稿を壊さないため）。
+   */
+  isAnonymous?: boolean
 }
 
 /**
@@ -95,6 +101,8 @@ export interface Reply {
   body: string
   isPrivate: boolean
   createdAt: string
+  /** 匿名で返信するかどうか。Post.isAnonymous と同じ考え方（未設定は false 扱い） */
+  isAnonymous?: boolean
 }
 
 /** ANNOUNCEMENT テーブル。ラベルとは繋がっておらず、常に全員に表示する（企画書 §6） */

@@ -36,6 +36,7 @@ export function PostForm({
   const [price, setPrice] = useState("")
   const [place, setPlace] = useState("")
   const [tagLabelIds, setTagLabelIds] = useState<string[]>([])
+  const [isAnonymous, setIsAnonymous] = useState(false)
   const [showErrors, setShowErrors] = useState(false)
 
   // 金額欄は「モノ」のときだけ意味を持つので、それ以外では検証しない
@@ -69,6 +70,7 @@ export function PostForm({
     setPrice("")
     setPlace("")
     setTagLabelIds([])
+    setIsAnonymous(false)
     setShowErrors(false)
   }
 
@@ -93,6 +95,7 @@ export function PostForm({
       tagLabelIds,
       createdAt: now,
       updatedAt: now,
+      isAnonymous,
     })
 
     resetForm()
@@ -250,6 +253,15 @@ export function PostForm({
           )
         })}
       </fieldset>
+
+      <label className="post-form__anonymous">
+        <input
+          type="checkbox"
+          checked={isAnonymous}
+          onChange={(e) => setIsAnonymous(e.target.checked)}
+        />
+        匿名で投稿する（自分以外には名前を表示しません）
+      </label>
 
       <div className="post-form__actions">
         <button type="button" onClick={() => setOpen(false)}>

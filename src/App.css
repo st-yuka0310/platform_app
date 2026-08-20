@@ -234,6 +234,14 @@
   margin-top: 6px;
 }
 
+.post-form__anonymous {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 .post-form__actions {
   display: flex;
   justify-content: flex-end;
@@ -295,15 +303,6 @@
   color: var(--accent);
   cursor: pointer;
   font-size: 0.8rem;
-}
-
-.timeline__mix-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-bottom: 8px;
 }
 
 /* --- ラベルを探す --- */

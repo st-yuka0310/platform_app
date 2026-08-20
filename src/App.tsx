@@ -79,7 +79,7 @@ function AppInner() {
     [myClubLabelIds],
   )
 
-  const clearAll = useCallback(() => setSelectedLabelIds([]), [])
+  const toggleAll = useCallback((ids: string[]) => toggleGroup(ids), [])
 
   const handleChangeStatus = useCallback(
     (postId: string, status: PostStatus) => updatePost(postId, { status }),
@@ -158,7 +158,7 @@ function AppInner() {
           labels={sampleLabels}
           selectedLabelIds={selectedLabelIds}
           onToggleLabel={toggleLabel}
-          onClearAll={clearAll}
+          onToggleAll={toggleAll}
           onAddReply={handleAddReply}
           onChangeStatus={handleChangeStatus}
           enrolledCourseLabelIds={enrolledCourseLabelIds}

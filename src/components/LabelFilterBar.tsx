@@ -44,7 +44,7 @@ export function LabelFilterBar({
   labels,
   selectedLabelIds,
   onToggle,
-  onClearAll,
+  onToggleAll,
   enrolledCourseLabelIds,
   onToggleEnrolledCourses,
   myClubLabelIds,
@@ -53,7 +53,8 @@ export function LabelFilterBar({
   labels: Label[]
   selectedLabelIds: string[]
   onToggle: (labelId: string) => void
-  onClearAll: () => void
+  /** 渡したidの集合を、全部選択済みなら全解除、そうでなければ全選択する */
+  onToggleAll: (ids: string[]) => void
   /** 自分が今「履修中」にしている科目のラベルID一覧 */
   enrolledCourseLabelIds: string[]
   /** 「履修中の講義」ボタンを押したときに、そのラベル群をまとめてオン/オフする */
@@ -69,6 +70,18 @@ export function LabelFilterBar({
   const otherLabels = labels.filter(
     (l) => l.category !== "履修科目" && l.category !== "課外活動",
   )
+
+  // 「すべて表示」ボタンで全部ON/全部OFFを切り替える対象。
+  // ここに並んでいるチップ（学部・学年・関心・キャンパスの個別ボタン＋
+  // 履修中の講義／所属サークルのまとめボタンの中身）が対象で、
+  // 検索（🔍 ラベルを探す）でしか出てこない履修科目の全件は含めない。
+  const allVisibleIds = [
+    ...otherLabels.map((l) => l.id),
+    ...enrolledCourseLabelIds,
+    ...myClubLabelIds,
+  ]
+  const allSelected =
+    allVisibleIds.length > 0 && allVisibleIds.every((id) => selected.has(id))
 
   return (
     <section className="label-filter-bar" aria-label="表示中のラベル">
@@ -108,10 +121,9 @@ export function LabelFilterBar({
         <button
           type="button"
           className="label-filter-bar__clear"
-          onClick={onClearAll}
-          disabled={selectedLabelIds.length === 0}
+          onClick={() => onToggleAll(allVisibleIds)}
         >
-          すべて表示 →
+          {allSelected ? "すべて解除 →" : "すべて選択 →"}
         </button>
       </div>
     </section>
