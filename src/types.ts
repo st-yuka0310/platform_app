@@ -104,7 +104,10 @@ export interface CourseInfo {
   /** 架空の担当教員名 */
   instructor: string
   term: string
-  targetGrade: string
+  /** 対応する Label.id（category === "学部"） */
+  facultyId: string
+  /** 対応する Label.id（category === "学年"）。対象学年の下限 */
+  gradeId: string
   credits: number
   hasExam: boolean
   /** 試験の配点など。任意 */

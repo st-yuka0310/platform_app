@@ -124,6 +124,10 @@ export function Timeline({
           labels={labels}
           selectedLabelIds={selectedLabelIds}
           onToggle={onToggleLabel}
+          posts={activePosts}
+          replies={replies}
+          onAddReply={onAddReply}
+          onChangeStatus={onChangeStatus}
         />
       ) : (
         <>

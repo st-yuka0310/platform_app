@@ -341,6 +341,74 @@
   margin-bottom: 0;
 }
 
+/* --- 履修科目を探す --- */
+
+.course-finder {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.course-finder__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 6px 0 10px;
+}
+
+.course-finder__filters select {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+
+.course-finder__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.course-finder__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.course-finder__info-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.course-finder__info-btn--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.course-finder__empty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.course-finder__detail {
+  margin-top: 10px;
+}
+
+.course-finder__posts-heading {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 10px 0 6px;
+}
+
 /* --- 授業情報 --- */
 
 .course-info-card {

@@ -4,12 +4,14 @@
  * すでにあるので、ここでは重複させない。
  */
 import type { CourseInfo } from "../types"
+import { labelName } from "../lib/format"
 
 export function CourseInfoCard({ info }: { info: CourseInfo }) {
   return (
     <div className="course-info-card">
       <p className="course-info-card__header">
-        {info.courseCode}／{info.term}／{info.targetGrade}／{info.credits}単位
+        {info.courseCode}／{info.term}／{labelName(info.facultyId)}／
+        {labelName(info.gradeId)}〜／{info.credits}単位
       </p>
 
       <p className="course-info-card__exam">
