@@ -10,7 +10,7 @@
  * CourseFinder に任せる（学部・学年での絞り込み、シラバス共有パネル）。
  */
 import { useState } from "react"
-import type { Label, Post, PostStatus, Reply } from "../types"
+import type { Label, Post, PostDirection, PostStatus, Reply } from "../types"
 import { LABEL_CATEGORIES, labelsInCategory } from "../lib/labels"
 import { CourseFinder } from "./CourseFinder"
 
@@ -24,6 +24,9 @@ export function LabelSearch({
   replies,
   onAddReply,
   onChangeStatus,
+  offeringCount,
+  wantedCount,
+  onViewTab,
 }: {
   labels: Label[]
   selectedLabelIds: string[]
@@ -32,6 +35,10 @@ export function LabelSearch({
   replies: Reply[]
   onAddReply: (reply: Reply) => void
   onChangeStatus: (postId: string, status: PostStatus) => void
+  /** 今の絞り込み条件に一致する件数。ラベルを選んだ効果をこのタブの中でも見せるため */
+  offeringCount: number
+  wantedCount: number
+  onViewTab: (tab: PostDirection) => void
 }) {
   const [query, setQuery] = useState("")
   const trimmedQuery = query.trim()
@@ -39,6 +46,16 @@ export function LabelSearch({
 
   return (
     <div className="label-search">
+      <div className="label-search__match-bar">
+        <span>今の絞り込みで見つかる投稿：</span>
+        <button type="button" onClick={() => onViewTab("提供します")}>
+          提供します（{offeringCount}）
+        </button>
+        <button type="button" onClick={() => onViewTab("求めています")}>
+          求めています（{wantedCount}）
+        </button>
+      </div>
+
       <input
         type="text"
         value={query}

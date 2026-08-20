@@ -128,6 +128,9 @@ export function Timeline({
           replies={replies}
           onAddReply={onAddReply}
           onChangeStatus={onChangeStatus}
+          offeringCount={offering.length}
+          wantedCount={wanted.length}
+          onViewTab={setActiveTab}
         />
       ) : (
         <>
