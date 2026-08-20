@@ -184,14 +184,49 @@
   margin-bottom: 8px;
 }
 
+.label-filter-bar__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
 .label-filter-bar__heading {
   font-size: 0.85rem;
   color: var(--text-muted);
-  margin: 0 0 6px;
+  margin: 0;
+}
+
+.label-filter-bar__group {
+  margin-bottom: 6px;
+}
+
+.label-filter-bar__group-name {
+  display: inline-block;
+  min-width: 4.5em;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-right: 6px;
+}
+
+.label-filter-bar__dropdowns {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.label-filter-bar__dropdowns select {
+  border: 1px solid #b8c4e0;
+  color: #35508f;
+  border-radius: 6px;
+  padding: 3px 6px;
+  background: var(--surface);
+  font-size: 0.8rem;
 }
 
 .label-filter-bar__buttons {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
   gap: 6px;
   align-items: center;
@@ -212,13 +247,61 @@
   color: #fff;
 }
 
+/* カテゴリごとの色分け（選択されていないときの枠線・文字色だけ変える） */
+.label-chip--faculty:not(.label-chip--on) {
+  border-color: #b8c4e0;
+  color: #35508f;
+}
+
+.label-chip--subject:not(.label-chip--on) {
+  border-color: #b9d8c6;
+  color: #2f6f4f;
+}
+
+.label-chip--club:not(.label-chip--on) {
+  border-color: #e3c2a3;
+  color: #a15c1f;
+}
+
+.label-chip--interest:not(.label-chip--on) {
+  border-color: #d8bfe0;
+  color: #7a3f92;
+}
+
+.label-chip--campus:not(.label-chip--on) {
+  border-color: #dbdbb8;
+  color: #7a7a2f;
+}
+
 .label-filter-bar__clear {
-  margin-left: auto;
   border: none;
   background: transparent;
   color: var(--accent);
   cursor: pointer;
   font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.timeline__controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.timeline__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.timeline__sort select {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 4px;
+  background: var(--surface);
 }
 
 .timeline__mix-toggle {
@@ -227,7 +310,6 @@
   gap: 4px;
   font-size: 0.8rem;
   color: var(--text-muted);
-  margin-bottom: 8px;
 }
 
 /* --- タイムライン --- */
