@@ -37,3 +37,9 @@
 .app__current-user {
   color: var(--text-muted);
 }
+
+.login-form__demo {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}

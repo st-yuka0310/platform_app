@@ -11,7 +11,9 @@
 import { useState } from "react"
 import type { Campus, Label, LabelCategory } from "../types"
 import { sampleLabels } from "../data/labels"
+import { sampleUsers } from "../data/users"
 import { useAuth } from "../context/AuthContext"
+import { DEMO_ACCOUNT_PASSWORD } from "../lib/authStorage"
 
 const CAMPUSES: Campus[] = ["荒牧", "桐生", "昭和"]
 
@@ -189,6 +191,32 @@ export function LoginForm() {
       >
         {mode === "login" ? "アカウントを作る" : "ログイン画面に戻る"}
       </button>
+
+      {mode === "login" && (
+        <div className="login-form__demo">
+          <p className="label-filter-bar__heading">
+            デモ用アカウント（パスワードは共通で {DEMO_ACCOUNT_PASSWORD}）
+          </p>
+          <div className="post-form__tag-list">
+            {sampleUsers.map((u) => (
+              <button
+                key={u.id}
+                type="button"
+                className="label-chip label-chip--off"
+                onClick={() => {
+                  setError(null)
+                  const result = login(u.name, DEMO_ACCOUNT_PASSWORD)
+                  if (!result.ok) {
+                    setError(result.message ?? "エラーが発生しました")
+                  }
+                }}
+              >
+                {u.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

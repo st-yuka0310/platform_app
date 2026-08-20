@@ -6,6 +6,7 @@ import {
   logoutAccount,
   registerAccount,
   restoreSession,
+  seedDemoAccountsIfEmpty,
 } from "../lib/authStorage"
 
 interface AuthResult {
@@ -29,9 +30,10 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<User | null>(() =>
-    restoreSession(),
-  )
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    seedDemoAccountsIfEmpty()
+    return restoreSession()
+  })
 
   function login(name: string, password: string): AuthResult {
     const result = loginAccount(name, password)

@@ -1,4 +1,5 @@
 import type { Campus, User } from "../types"
+import { sampleUsers } from "../data/users"
 
 /**
  * ログイン機能（自由登録方式）。
@@ -109,4 +110,30 @@ export function restoreSession(): User | null {
  */
 export function listAccountUsers(): User[] {
   return Object.values(loadAccounts()).map(toUser)
+}
+
+/** デモ用アカウントの共通パスワード。sampleUsers の誰でもこれでログインできる */
+export const DEMO_ACCOUNT_PASSWORD = "demo1234"
+
+/**
+ * サンプルの6人（企画書のデモデータ）を、そのままログインできるアカウントとして
+ * 種まきする。非公開の返信のデモ（p1 に対する u1・u6 からの返信など）は
+ * この6人を前提にしているため、ログイン機能を入れた後もこの6人でログインして
+ * 試せるようにしておく。アカウントが1件もないとき（初回起動時）だけ実行する。
+ */
+export function seedDemoAccountsIfEmpty(): void {
+  const accounts = loadAccounts()
+  if (Object.keys(accounts).length > 0) return
+
+  const seeded: AccountTable = {}
+  for (const user of sampleUsers) {
+    seeded[user.name] = {
+      id: user.id,
+      name: user.name,
+      password: DEMO_ACCOUNT_PASSWORD,
+      campus: user.campus,
+      labelIds: user.labelIds,
+    }
+  }
+  saveAccounts(seeded)
 }

@@ -12,6 +12,7 @@ import { LoginForm } from "./components/LoginForm"
 import { PostForm } from "./components/PostForm"
 import { Timeline } from "./components/Timeline"
 import "./App.css"
+import "./App.additions.css"
 
 function AppInner() {
   const { viewer } = useViewer()
