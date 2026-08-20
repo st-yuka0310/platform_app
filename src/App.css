@@ -316,20 +316,6 @@
 
 /* --- ラベルを探す --- */
 
-.label-search__open {
-  display: block;
-  width: 100%;
-  text-align: left;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  margin-bottom: 8px;
-}
-
 .label-search {
   border: 1px solid var(--border);
   background: var(--surface);
@@ -338,25 +324,13 @@
   margin-bottom: 10px;
 }
 
-.label-search__header {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
 .label-search__input {
-  flex: 1;
+  display: block;
+  width: 100%;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 6px 8px;
-}
-
-.label-search__close {
-  border: none;
-  background: none;
-  color: var(--accent);
-  cursor: pointer;
-  font-size: 0.82rem;
+  margin-bottom: 10px;
 }
 
 .label-search__category {
@@ -416,17 +390,28 @@
 
 /* --- タイムライン --- */
 
-.timeline__groups {
+.timeline__tabs {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  gap: 4px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border);
 }
 
-.timeline__group-heading {
-  font-size: 0.95rem;
-  margin: 0 0 8px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--border);
+.timeline__tab {
+  border: none;
+  background: none;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.timeline__tab--active {
+  color: var(--accent);
+  font-weight: 600;
+  border-bottom-color: var(--accent);
 }
 
 .timeline__list {
