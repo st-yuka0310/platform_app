@@ -25,6 +25,15 @@ export type Faculty = "医学部" | "情報学部" | "教育学部" | "理工学
 /** 学年もプルダウンで単一選択する */
 export type Grade = "1年" | "2年" | "3年" | "4年"
 
+/** 履修科目だけは「今取っているか、取り終えたか」を持つ（他のラベルにはない属性） */
+export type CourseStatus = "履修中" | "履修済み"
+
+/** USER_LABEL のうち、履修科目（category="履修科目"）についてだけ状態を持たせたもの */
+export interface UserCourse {
+  labelId: string
+  status: CourseStatus
+}
+
 /** LABEL テーブル */
 export interface Label {
   id: string
@@ -32,12 +41,17 @@ export interface Label {
   category: LabelCategory
 }
 
-/** USER テーブル。labelIds が USER_LABEL の中身にあたる */
+/**
+ * USER テーブル。
+ * labelIds は学部・学年・課外活動・関心（状態を持たないラベル）の USER_LABEL。
+ * 履修科目だけは履修中/履修済みの状態が要るため、courses に分けて持つ。
+ */
 export interface User {
   id: string
   name: string
   campus: Campus
   labelIds: string[]
+  courses: UserCourse[]
 }
 
 /**
@@ -65,6 +79,8 @@ export interface Post {
   status: PostStatus
   tagLabelIds: string[]
   createdAt: string
+  /** 最終編集日時。新規投稿時は createdAt と同じ値にする */
+  updatedAt: string
 }
 
 /**

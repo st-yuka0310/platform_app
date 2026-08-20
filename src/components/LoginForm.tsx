@@ -2,28 +2,22 @@
  * ログイン／新規登録画面。
  *
  * これは見た目のみのログインで、本当の認証ではない（企画書 §10 の延長）。
- * 新規登録時にラベルを選んでもらうことで、登録直後から §4 の絞り込みが
- * 意味を持つようにしている。
- *
- * 学部・学年は「人につき1つ」しかありえないため、他のラベル（複数選択の
- * チップ）とは別に、プルダウン（単一選択）で選ぶ。
+ * 新規登録時にプロフィール項目（キャンパス・学部・学年・履修科目・課外活動・
+ * 関心）を選んでもらうことで、登録直後から §4 の絞り込みが意味を持つように
+ * している。登録後もプロフィール編集からいつでも変更できる。
  */
 import { useState } from "react"
-import type { Campus, LabelCategory } from "../types"
-import { sampleLabels } from "../data/labels"
+import type { Campus } from "../types"
 import { sampleUsers } from "../data/users"
 import { useAuth } from "../context/AuthContext"
 import { DEMO_ACCOUNT_PASSWORD } from "../lib/authStorage"
-import { labelsInCategory } from "../lib/labels"
+import {
+  ProfileFields,
+  validateProfileFields,
+  type ProfileFieldsValue,
+} from "./ProfileFields"
 
-const CAMPUSES: Campus[] = ["荒牧", "桐生", "昭和"]
-
-// プルダウン（単一選択）で選ぶカテゴリ
-const DROPDOWN_CATEGORIES: LabelCategory[] = ["学部", "学年"]
-
-// チップ（複数選択）で選ぶカテゴリ。
-// キャンパスは User.campus という専用フィールドがすでにあるのでここには含めない。
-const MULTI_SELECT_CATEGORIES: LabelCategory[] = ["履修科目", "課外活動", "関心"]
+const DEFAULT_CAMPUS: Campus = "荒牧"
 
 export function LoginForm() {
   const { login, register } = useAuth()
@@ -31,41 +25,21 @@ export function LoginForm() {
 
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
-  const [campus, setCampus] = useState<Campus>("荒牧")
-  const [labelIds, setLabelIds] = useState<string[]>([])
+  const [profile, setProfile] = useState<ProfileFieldsValue>({
+    campus: DEFAULT_CAMPUS,
+    labelIds: [],
+    courses: [],
+  })
   const [error, setError] = useState<string | null>(null)
-
-  function selectedIdIn(category: LabelCategory): string {
-    const ids = new Set(labelsInCategory(sampleLabels, category).map((l) => l.id))
-    return labelIds.find((id) => ids.has(id)) ?? ""
-  }
-
-  function setDropdownValue(category: LabelCategory, labelId: string) {
-    const ids = new Set(labelsInCategory(sampleLabels, category).map((l) => l.id))
-    setLabelIds((prev) => {
-      const withoutCategory = prev.filter((id) => !ids.has(id))
-      return labelId ? [...withoutCategory, labelId] : withoutCategory
-    })
-  }
-
-  function toggleChip(labelId: string) {
-    setLabelIds((prev) =>
-      prev.includes(labelId)
-        ? prev.filter((id) => id !== labelId)
-        : [...prev, labelId],
-    )
-  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
 
     if (mode === "register") {
-      const missingCategory = DROPDOWN_CATEGORIES.find(
-        (category) => !selectedIdIn(category),
-      )
-      if (missingCategory) {
-        setError(`${missingCategory}を選んでください`)
+      const message = validateProfileFields(profile)
+      if (message) {
+        setError(message)
         return
       }
     }
@@ -73,7 +47,13 @@ export function LoginForm() {
     const result =
       mode === "login"
         ? login(name, password)
-        : register(name, password, campus, labelIds)
+        : register(
+            name,
+            password,
+            profile.campus,
+            profile.labelIds,
+            profile.courses,
+          )
     if (!result.ok) {
       setError(result.message ?? "エラーが発生しました")
     }
@@ -104,71 +84,7 @@ export function LoginForm() {
         </label>
 
         {mode === "register" && (
-          <>
-            <fieldset className="post-form__axis">
-              <legend>キャンパス</legend>
-              {CAMPUSES.map((c) => (
-                <label key={c}>
-                  <input
-                    type="radio"
-                    name="campus"
-                    checked={campus === c}
-                    onChange={() => setCampus(c)}
-                  />
-                  {c}
-                </label>
-              ))}
-            </fieldset>
-
-            {DROPDOWN_CATEGORIES.map((category) => (
-              <label key={category} className="post-form__field">
-                {category}
-                <select
-                  value={selectedIdIn(category)}
-                  onChange={(e) => setDropdownValue(category, e.target.value)}
-                  required
-                >
-                  <option value="">選択してください</option>
-                  {labelsInCategory(sampleLabels, category).map((label) => (
-                    <option key={label.id} value={label.id}>
-                      {label.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ))}
-
-            <fieldset className="post-form__tags">
-              <legend>
-                そのほか関係のあるラベルを選んでください（あとから変更はできません）
-              </legend>
-              {MULTI_SELECT_CATEGORIES.map((category) => (
-                <div key={category}>
-                  <p className="label-filter-bar__heading">{category}</p>
-                  <div className="post-form__tag-list">
-                    {labelsInCategory(sampleLabels, category).map((label) => {
-                      const isOn = labelIds.includes(label.id)
-                      return (
-                        <button
-                          key={label.id}
-                          type="button"
-                          className={
-                            isOn
-                              ? "label-chip label-chip--on"
-                              : "label-chip label-chip--off"
-                          }
-                          aria-pressed={isOn}
-                          onClick={() => toggleChip(label.id)}
-                        >
-                          {label.name}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              ))}
-            </fieldset>
-          </>
+          <ProfileFields value={profile} onChange={setProfile} />
         )}
 
         {error && <p className="login-form__error">{error}</p>}

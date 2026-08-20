@@ -11,6 +11,11 @@ import { useMemo, useState } from "react"
 import type { Label, Post, PostDirection, PostStatus, Reply } from "../types"
 import { filterPostsByLabels } from "../lib/timelineFilter"
 import { mixInOutsideRange } from "../lib/timelineMix"
+import {
+  filterByCourseRequestMode,
+  type CourseRequestMode,
+} from "../lib/courseRequestFilter"
+import { CourseRequestFilter } from "./CourseRequestFilter"
 import { LabelSearch } from "./LabelSearch"
 import { LabelFilterBar } from "./LabelFilterBar"
 import { PostCard } from "./PostCard"
@@ -26,6 +31,13 @@ export function Timeline({
   onClearAll,
   onAddReply,
   onChangeStatus,
+  enrolledCourseLabelIds,
+  onToggleEnrolledCourses,
+  myClubLabelIds,
+  onToggleMyClubs,
+  myCourseLabelIds,
+  courseRequestMode,
+  onChangeCourseRequestMode,
 }: {
   posts: Post[]
   replies: Reply[]
@@ -35,6 +47,14 @@ export function Timeline({
   onClearAll: () => void
   onAddReply: (reply: Reply) => void
   onChangeStatus: (postId: string, status: PostStatus) => void
+  enrolledCourseLabelIds: string[]
+  onToggleEnrolledCourses: () => void
+  myClubLabelIds: string[]
+  onToggleMyClubs: () => void
+  /** 自分が履修中・履修済み（どちらでも）である講義のラベルID一覧 */
+  myCourseLabelIds: string[]
+  courseRequestMode: CourseRequestMode
+  onChangeCourseRequestMode: (mode: CourseRequestMode) => void
 }) {
   // 完了した投稿はタイムラインに流し続けない（企画書 §8 付録B 理由5）
   const activePosts = useMemo(
@@ -42,13 +62,21 @@ export function Timeline({
     [posts],
   )
 
+  // 「求めています」の投稿を、選んだモードに合わせて先に絞っておく。
+  // 「提供します」には影響しない（lib/courseRequestFilter.ts参照）
+  const visiblePosts = useMemo(
+    () =>
+      filterByCourseRequestMode(activePosts, courseRequestMode, myCourseLabelIds),
+    [activePosts, courseRequestMode, myCourseLabelIds],
+  )
+
   const [mixEnabled, setMixEnabled] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>("提供します")
 
   const sorted = useMemo(
     () =>
-      [...activePosts].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-    [activePosts],
+      [...visiblePosts].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    [visiblePosts],
   )
 
   const matched = useMemo(
@@ -139,7 +167,18 @@ export function Timeline({
             selectedLabelIds={selectedLabelIds}
             onToggle={onToggleLabel}
             onClearAll={onClearAll}
+            enrolledCourseLabelIds={enrolledCourseLabelIds}
+            onToggleEnrolledCourses={onToggleEnrolledCourses}
+            myClubLabelIds={myClubLabelIds}
+            onToggleMyClubs={onToggleMyClubs}
           />
+
+          {activeTab === "求めています" && (
+            <CourseRequestFilter
+              mode={courseRequestMode}
+              onChange={onChangeCourseRequestMode}
+            />
+          )}
 
           {selectedLabelIds.length > 0 && (
             <label className="timeline__mix-toggle">

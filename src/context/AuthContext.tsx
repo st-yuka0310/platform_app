@@ -1,12 +1,13 @@
 import { createContext, useContext, useState } from "react"
 import type { ReactNode } from "react"
-import type { Campus, User } from "../types"
+import type { Campus, User, UserCourse } from "../types"
 import {
   loginAccount,
   logoutAccount,
   registerAccount,
   restoreSession,
   seedDemoAccountsIfEmpty,
+  updateAccount,
 } from "../lib/authStorage"
 
 interface AuthResult {
@@ -23,6 +24,13 @@ interface AuthContextValue {
     password: string,
     campus: Campus,
     labelIds: string[],
+    courses: UserCourse[],
+  ) => AuthResult
+  /** ログイン中の本人のプロフィールを更新する（表示名・パスワードは対象外） */
+  updateProfile: (
+    campus: Campus,
+    labelIds: string[],
+    courses: UserCourse[],
   ) => AuthResult
   logout: () => void
 }
@@ -47,8 +55,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: string,
     campus: Campus,
     labelIds: string[],
+    courses: UserCourse[],
   ): AuthResult {
-    const result = registerAccount(name, password, campus, labelIds)
+    const result = registerAccount(name, password, campus, labelIds, courses)
+    if (!result.ok) return result
+    setCurrentUser(result.user)
+    return { ok: true }
+  }
+
+  function updateProfile(
+    campus: Campus,
+    labelIds: string[],
+    courses: UserCourse[],
+  ): AuthResult {
+    if (!currentUser) {
+      return { ok: false, message: "ログインしてください" }
+    }
+    const result = updateAccount(currentUser.name, { campus, labelIds, courses })
     if (!result.ok) return result
     setCurrentUser(result.user)
     return { ok: true }
@@ -60,7 +83,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ currentUser, login, register, updateProfile, logout }}
+    >
       {children}
     </AuthContext.Provider>
   )

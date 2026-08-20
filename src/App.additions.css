@@ -43,3 +43,103 @@
   padding-top: 12px;
   border-top: 1px dashed var(--border);
 }
+
+.login-form__saved {
+  color: var(--accent);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+/* 履修済みの科目チップ（履修中＝--on とは別の色にする） */
+.label-chip--done {
+  border: 1px solid var(--accent);
+  background: var(--surface);
+  color: var(--accent);
+}
+
+/* --- 「求めています」講義投稿の表示切り替え --- */
+
+.course-request-filter {
+  border: none;
+  margin: 0 0 8px;
+  padding: 0;
+}
+
+.course-request-filter__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+
+.course-request-filter__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+/* --- 投稿を編集 --- */
+
+.post-manager__empty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.post-manager__list {
+  list-style: none;
+  margin: 12px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.post-manager__item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.post-manager__summary {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  border: none;
+  background: none;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+
+.post-manager__title {
+  font-weight: 600;
+}
+
+.post-manager__date {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.post-manager__form {
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  margin-top: 0;
+}
+
+.post-manager__form-actions {
+  justify-content: space-between;
+}
+
+.post-manager__delete {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: var(--surface);
+  margin-right: auto;
+}

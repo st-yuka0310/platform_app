@@ -481,30 +481,6 @@
 
 /* --- タイムライン --- */
 
-.timeline__tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-}
-
-.timeline__tab {
-  border: none;
-  background: none;
-  padding: 8px 10px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-}
-
-.timeline__tab--active {
-  color: var(--accent);
-  font-weight: 600;
-  border-bottom-color: var(--accent);
-}
-
 .timeline__list {
   list-style: none;
   margin: 0;

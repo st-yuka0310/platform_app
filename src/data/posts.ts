@@ -7,8 +7,12 @@ import type { Post } from "../types"
  * もともとは「情報」というマスもあり、留学の体験談や教職課程の話を
  * ここに置いていたが、「学内である必然性が一番弱い」という理由で
  * 削った（README §3）。それらの投稿はここから削除している。
+ *
+ * updatedAt（最終編集日時）はサンプルデータでは常に createdAt と同じにしておき、
+ * 個別に書かず末尾の .map() でまとめて補っている（投稿の編集機能を追加した際に、
+ * すでにあったオブジェクトを1つずつ書き換えずに済むようにするため）。
  */
-export const samplePosts: Post[] = [
+const rawSamplePosts: Omit<Post, "updatedAt">[] = [
   {
     id: "p1",
     authorId: "u3",
@@ -158,3 +162,8 @@ export const samplePosts: Post[] = [
     createdAt: "2026-08-18T10:00:00+09:00",
   },
 ]
+
+export const samplePosts: Post[] = rawSamplePosts.map((p) => ({
+  ...p,
+  updatedAt: p.createdAt,
+}))
