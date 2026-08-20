@@ -25,6 +25,15 @@ export type Faculty = "医学部" | "情報学部" | "教育学部" | "理工学
 /** 学年もプルダウンで単一選択する */
 export type Grade = "1年" | "2年" | "3年" | "4年"
 
+/** 履修科目だけは「今取っているか、取り終えたか」を持つ（他のラベルにはない属性） */
+export type CourseStatus = "履修中" | "履修済み"
+
+/** USER_LABEL のうち、履修科目（category="履修科目"）についてだけ状態を持たせたもの */
+export interface UserCourse {
+  labelId: string
+  status: CourseStatus
+}
+
 /** LABEL テーブル */
 export interface Label {
   id: string
@@ -32,21 +41,22 @@ export interface Label {
   category: LabelCategory
 }
 
-/** USER テーブル。labelIds が USER_LABEL の中身にあたる */
+/**
+ * USER テーブル。
+ * labelIds は学部・学年・課外活動・関心（状態を持たないラベル）の USER_LABEL。
+ * 履修科目だけは履修中/履修済みの状態が要るため、courses に分けて持つ。
+ */
 export interface User {
   id: string
   name: string
   campus: Campus
   labelIds: string[]
+  courses: UserCourse[]
 }
 
-/**
- * 投稿を分類する2軸（企画書 §3 の4マス）。
- * 以前は PostKind に「情報」もあったが、学内である必然性が
- * 一番弱いという理由で削った（README §3）。
- */
+/** 投稿を分類する2軸（企画書 §3 の6マス） */
 export type PostDirection = "提供します" | "求めています"
-export type PostKind = "モノ" | "手伝い"
+export type PostKind = "モノ" | "手伝い" | "情報"
 
 /** 受け渡しが済んだ投稿をタイムラインから止めるための状態（企画書 §8 付録B 理由5） */
 export type PostStatus = "募集中" | "やり取り中" | "完了"
@@ -65,6 +75,8 @@ export interface Post {
   status: PostStatus
   tagLabelIds: string[]
   createdAt: string
+  /** 最終編集日時。新規投稿時は createdAt と同じ値にする */
+  updatedAt: string
 }
 
 /**
@@ -86,35 +98,4 @@ export interface Announcement {
   title: string
   body: string
   publishedAt: string
-}
-
-/**
- * COURSE_INFO テーブル。履修科目ラベルに付く授業情報（試験の有無・授業計画など）。
- * ANNOUNCEMENT と同じ固定サンプル扱いで、編集画面は作らない。
- *
- * 担当教員の連絡先（メール・電話・オフィスアワー等）に対応するフィールドは
- * 意図的に持たせていない。型に置き場がないことで、実在の教員の個人情報が
- * サンプルデータに紛れ込む余地をなくしている。
- */
-export interface CourseInfo {
-  id: string
-  /** 対応する Label.id（category === "履修科目"） */
-  labelId: string
-  courseCode: string
-  /** 架空の担当教員名 */
-  instructor: string
-  term: string
-  /** 対応する Label.id（category === "学部"） */
-  facultyId: string
-  /** 対応する Label.id（category === "学年"）。対象学年の下限 */
-  gradeId: string
-  credits: number
-  hasExam: boolean
-  /** 試験の配点など。任意 */
-  examWeight?: string
-  /** 16回分の表ではなく、1つの文章にまとめる */
-  scheduleOverview: string
-  evaluationMethod: string
-  textbook?: string
-  syllabusOverview: string
 }

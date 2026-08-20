@@ -1,37 +1,40 @@
 /**
- * 担当: A（投稿の作成画面。2軸の選択とタグ付け）
- *
- * 投稿は1種類だけで、違いは2軸（提供します/求めています ×
- * モノ/手伝い/情報）とタグだけ（企画書 §3）。別ページには移らず、
- * 画面の中に入力欄が開く（企画書 §5）。
+ * 「投稿を編集」から、自分の投稿1件を開いたときに出てくる編集フォーム。
+ * PostForm（新規投稿）とほぼ同じ入力項目に加えて、状態（募集中／やり取り中／完了）の
+ * 変更と、削除ボタンを持つ。
  */
 import { useState } from "react"
-import type { Label, Post, PostDirection, PostKind } from "../types"
-import { useViewer } from "../context/ViewerContext"
+import type { Label, Post, PostDirection, PostKind, PostStatus } from "../types"
 
 const DIRECTIONS: PostDirection[] = ["提供します", "求めています"]
 const KINDS: PostKind[] = ["モノ", "手伝い", "情報"]
+const STATUS_OPTIONS: PostStatus[] = ["募集中", "やり取り中", "完了"]
 
-export function PostForm({
+export function PostEditForm({
+  post,
   labels,
-  onAddPost,
+  onSave,
+  onDelete,
+  onCancel,
 }: {
+  post: Post
   labels: Label[]
-  onAddPost: (post: Post) => void
+  onSave: (patch: Partial<Post>) => void
+  onDelete: () => void
+  onCancel: () => void
 }) {
-  const { viewerId } = useViewer()
-  const [open, setOpen] = useState(false)
-
-  const [direction, setDirection] = useState<PostDirection>("提供します")
-  const [kind, setKind] = useState<PostKind>("モノ")
-  const [title, setTitle] = useState("")
-  const [body, setBody] = useState("")
-  const [price, setPrice] = useState("")
-  const [place, setPlace] = useState("")
-  const [tagLabelIds, setTagLabelIds] = useState<string[]>([])
+  const [direction, setDirection] = useState<PostDirection>(post.direction)
+  const [kind, setKind] = useState<PostKind>(post.kind)
+  const [title, setTitle] = useState(post.title)
+  const [body, setBody] = useState(post.body)
+  const [price, setPrice] = useState(
+    post.price !== undefined ? String(post.price) : "",
+  )
+  const [place, setPlace] = useState(post.place)
+  const [status, setStatus] = useState<PostStatus>(post.status)
+  const [tagLabelIds, setTagLabelIds] = useState<string[]>(post.tagLabelIds)
   const [showErrors, setShowErrors] = useState(false)
 
-  // 金額欄は「モノ」のときだけ意味を持つので、それ以外では検証しない
   const priceError =
     kind === "モノ" && price !== "" && Number(price) < 0
       ? "0円以上を入力してください"
@@ -47,17 +50,6 @@ export function PostForm({
     )
   }
 
-  function resetForm() {
-    setDirection("提供します")
-    setKind("モノ")
-    setTitle("")
-    setBody("")
-    setPrice("")
-    setPlace("")
-    setTagLabelIds([])
-    setShowErrors(false)
-  }
-
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!isValid) {
@@ -65,40 +57,21 @@ export function PostForm({
       return
     }
 
-    const now = new Date().toISOString()
-    onAddPost({
-      id: `p-${crypto.randomUUID()}`,
-      authorId: viewerId,
+    onSave({
       direction,
       kind,
       title: title.trim(),
       body: body.trim(),
       price: kind === "モノ" && price ? Number(price) : undefined,
       place: place.trim(),
-      status: "募集中",
+      status,
       tagLabelIds,
-      createdAt: now,
-      updatedAt: now,
+      updatedAt: new Date().toISOString(),
     })
-
-    resetForm()
-    setOpen(false)
-  }
-
-  if (!open) {
-    return (
-      <button
-        type="button"
-        className="post-form__open"
-        onClick={() => setOpen(true)}
-      >
-        ＋ 投稿する
-      </button>
-    )
   }
 
   return (
-    <form className="post-form" onSubmit={handleSubmit} noValidate>
+    <form className="post-form post-manager__form" onSubmit={handleSubmit} noValidate>
       <fieldset className="post-form__axis">
         <legend>どちらですか</legend>
         <div className="post-form__chip-group">
@@ -192,6 +165,17 @@ export function PostForm({
         )}
       </label>
 
+      <label className="post-form__field">
+        状態
+        <select value={status} onChange={(e) => setStatus(e.target.value as PostStatus)}>
+          {STATUS_OPTIONS.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+      </label>
+
       <fieldset className="post-form__tags">
         <legend>タグ</legend>
         <div className="post-form__tag-list">
@@ -214,11 +198,14 @@ export function PostForm({
         </div>
       </fieldset>
 
-      <div className="post-form__actions">
-        <button type="button" onClick={() => setOpen(false)}>
+      <div className="post-form__actions post-manager__form-actions">
+        <button type="button" className="post-manager__delete" onClick={onDelete}>
+          この投稿を削除する
+        </button>
+        <button type="button" onClick={onCancel}>
           やめる
         </button>
-        <button type="submit">投稿する</button>
+        <button type="submit">保存する</button>
       </div>
     </form>
   )

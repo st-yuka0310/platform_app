@@ -1,4 +1,4 @@
-import type { Campus, User } from "../types"
+import type { Campus, User, UserCourse } from "../types"
 import { sampleUsers } from "../data/users"
 
 /**
@@ -12,7 +12,8 @@ import { sampleUsers } from "../data/users"
  * sampleUsers（既存の6人のサンプル利用者）とは別に、ここで登録した
  * アカウントが本当の User として扱われる。新規登録者にはラベルが
  * 付いていない状態から始まるので、絞り込み（§4）を試すには登録時に
- * ラベルを選んでもらう。
+ * ラベルを選んでもらう。ログイン後はプロフィール編集からいつでも
+ * 変更できる（updateAccount）。
  */
 
 const ACCOUNTS_KEY = "platform_app:accounts"
@@ -24,6 +25,7 @@ interface Account {
   password: string
   campus: Campus
   labelIds: string[]
+  courses: UserCourse[]
 }
 
 type AccountTable = Record<string, Account> // key = name
@@ -46,7 +48,11 @@ function toUser(account: Account): User {
     id: account.id,
     name: account.name,
     campus: account.campus,
-    labelIds: account.labelIds,
+    labelIds: account.labelIds ?? [],
+    // 履修中/履修済み機能を追加する前に登録したアカウントには courses が
+    // 存在しない（localStorage に古い形式のまま残っている）ことがあるため、
+    // 無ければ空配列として扱う（真っ白画面になるのを防ぐ）
+    courses: account.courses ?? [],
   }
 }
 
@@ -55,6 +61,7 @@ export function registerAccount(
   password: string,
   campus: Campus,
   labelIds: string[],
+  courses: UserCourse[],
 ): { ok: true; user: User } | { ok: false; message: string } {
   const trimmed = name.trim()
   if (!trimmed || !password) {
@@ -70,6 +77,7 @@ export function registerAccount(
     password,
     campus,
     labelIds,
+    courses,
   }
   accounts[trimmed] = account
   saveAccounts(accounts)
@@ -104,6 +112,26 @@ export function restoreSession(): User | null {
 }
 
 /**
+ * ログイン中の本人のプロフィール（キャンパス・学部・学年・履修科目・
+ * 課外活動・関心）を書き換える。表示名とパスワードはここでは変更しない
+ * （表示名はログインIDを兼ねているため）。
+ */
+export function updateAccount(
+  name: string,
+  updates: { campus: Campus; labelIds: string[]; courses: UserCourse[] },
+): { ok: true; user: User } | { ok: false; message: string } {
+  const accounts = loadAccounts()
+  const account = accounts[name]
+  if (!account) {
+    return { ok: false, message: "アカウントが見つかりません" }
+  }
+  const updated: Account = { ...account, ...updates }
+  accounts[name] = updated
+  saveAccounts(accounts)
+  return { ok: true, user: toUser(updated) }
+}
+
+/**
  * 登録済みアカウントを User の形で一覧取得する。
  * sampleUsers（既存6人）とは別の集合なので、投稿者名の表示などで
  * sampleUsers と合わせて参照する（lib/format.ts の userName 参照）。
@@ -133,6 +161,7 @@ export function seedDemoAccountsIfEmpty(): void {
       password: DEMO_ACCOUNT_PASSWORD,
       campus: user.campus,
       labelIds: user.labelIds,
+      courses: user.courses,
     }
   }
   saveAccounts(seeded)

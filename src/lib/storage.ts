@@ -28,7 +28,10 @@ function loadOrSeed<T>(key: string, seed: T[]): T[] {
 }
 
 export function loadPosts(): Post[] {
-  return loadOrSeed(STORAGE_KEYS.posts, samplePosts)
+  const posts = loadOrSeed(STORAGE_KEYS.posts, samplePosts)
+  // 投稿の編集機能を追加する前の localStorage データには updatedAt が無いことがあるため、
+  // 無ければ createdAt を代わりに使う（courses ?? [] と同じ考え方の防御）。
+  return posts.map((p) => ({ ...p, updatedAt: p.updatedAt ?? p.createdAt }))
 }
 
 export function savePosts(posts: Post[]): void {

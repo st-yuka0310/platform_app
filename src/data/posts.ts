@@ -1,14 +1,14 @@
 import type { Post } from "../types"
 
 /**
- * サンプル投稿。企画書 §3 の4マス（提供します/求めています × モノ/手伝い）を
+ * サンプル投稿。企画書 §3 の6マス（提供します/求めています × モノ/手伝い/情報）を
  * すべて含むようにしてある。人名・金額はすべて架空。
  *
- * もともとは「情報」というマスもあり、留学の体験談や教職課程の話を
- * ここに置いていたが、「学内である必然性が一番弱い」という理由で
- * 削った（README §3）。それらの投稿はここから削除している。
+ * updatedAt（最終編集日時）はサンプルデータでは常に createdAt と同じにしておき、
+ * 個別に書かず末尾の .map() でまとめて補っている（投稿の編集機能を追加した際に、
+ * すでにあった18件のオブジェクトを1つずつ書き換えずに済むようにするため）。
  */
-export const samplePosts: Post[] = [
+const rawSamplePosts: Omit<Post, "updatedAt">[] = [
   {
     id: "p1",
     authorId: "u3",
@@ -59,6 +59,30 @@ export const samplePosts: Post[] = [
     createdAt: "2026-08-12T13:00:00+09:00",
   },
   {
+    id: "p5",
+    authorId: "u2",
+    direction: "提供します",
+    kind: "情報",
+    title: "留学の体験談",
+    body: "半年間の交換留学に行っていました。費用や単位振替の話ができます。",
+    place: "オンライン可",
+    status: "募集中",
+    tagLabelIds: ["l-int-ryugaku", "l-faculty-joho", "l-grade-3"],
+    createdAt: "2026-08-13T18:00:00+09:00",
+  },
+  {
+    id: "p6",
+    authorId: "u4",
+    direction: "求めています",
+    kind: "情報",
+    title: "教職課程の実態を知りたい",
+    body: "教育実習の忙しさや、両立の仕方を教えてください。",
+    place: "オンライン可",
+    status: "募集中",
+    tagLabelIds: ["l-int-kyoshi", "l-faculty-kyoiku", "l-grade-2"],
+    createdAt: "2026-08-13T20:00:00+09:00",
+  },
+  {
     id: "p7",
     authorId: "u2",
     direction: "提供します",
@@ -94,6 +118,30 @@ export const samplePosts: Post[] = [
     status: "募集中",
     tagLabelIds: ["l-club-keion", "l-campus-kiryu"],
     createdAt: "2026-08-14T19:00:00+09:00",
+  },
+  {
+    id: "p10",
+    authorId: "u5",
+    direction: "求めています",
+    kind: "情報",
+    title: "大学院進学、研究室の選び方を知りたい",
+    body: "見学のタイミングや聞くべきことを教えてほしいです。",
+    place: "オンライン可",
+    status: "募集中",
+    tagLabelIds: ["l-int-daigakuin", "l-faculty-joho", "l-grade-3"],
+    createdAt: "2026-08-15T09:00:00+09:00",
+  },
+  {
+    id: "p11",
+    authorId: "u1",
+    direction: "提供します",
+    kind: "情報",
+    title: "テニス部の大会の記録を共有します",
+    body: "先月の大会結果と対戦相手の傾向をまとめました。",
+    place: "オンライン可",
+    status: "募集中",
+    tagLabelIds: ["l-club-tennis"],
+    createdAt: "2026-08-15T12:00:00+09:00",
   },
   {
     id: "p12",
@@ -133,6 +181,18 @@ export const samplePosts: Post[] = [
     createdAt: "2026-08-16T14:00:00+09:00",
   },
   {
+    id: "p15",
+    authorId: "u4",
+    direction: "提供します",
+    kind: "情報",
+    title: "教員採用試験の勉強法",
+    body: "使っていた参考書と、勉強のスケジュールを共有します。",
+    place: "オンライン可",
+    status: "募集中",
+    tagLabelIds: ["l-int-kyoshi"],
+    createdAt: "2026-08-17T09:00:00+09:00",
+  },
+  {
     id: "p16",
     authorId: "u6",
     direction: "提供します",
@@ -144,6 +204,18 @@ export const samplePosts: Post[] = [
     status: "完了",
     tagLabelIds: ["l-campus-kiryu"],
     createdAt: "2026-08-08T09:00:00+09:00",
+  },
+  {
+    id: "p17",
+    authorId: "u2",
+    direction: "求めています",
+    kind: "情報",
+    title: "軽音サークルの見学をしたい",
+    body: "初心者でも見学できる日があれば教えてください。",
+    place: "桐生",
+    status: "募集中",
+    tagLabelIds: ["l-club-keion"],
+    createdAt: "2026-08-17T18:00:00+09:00",
   },
   {
     id: "p18",
@@ -158,3 +230,8 @@ export const samplePosts: Post[] = [
     createdAt: "2026-08-18T10:00:00+09:00",
   },
 ]
+
+export const samplePosts: Post[] = rawSamplePosts.map((p) => ({
+  ...p,
+  updatedAt: p.createdAt,
+}))
