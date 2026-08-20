@@ -1,15 +1,20 @@
 import { sampleLabels } from "../data/labels"
 import { sampleUsers } from "../data/users"
+import { listAccountUsers } from "./authStorage"
 
 const labelById = new Map(sampleLabels.map((l) => [l.id, l]))
-const userById = new Map(sampleUsers.map((u) => [u.id, u]))
 
 export function labelName(labelId: string): string {
   return labelById.get(labelId)?.name ?? labelId
 }
 
 export function userName(userId: string): string {
-  return userById.get(userId)?.name ?? "不明な利用者"
+  // サンプルの6人 + ログイン機能で新規登録されたアカウントの両方から探す。
+  // 登録は実行中に増えていくので、都度アカウント一覧を読み直す。
+  const fromSample = sampleUsers.find((u) => u.id === userId)
+  if (fromSample) return fromSample.name
+  const fromAccount = listAccountUsers().find((u) => u.id === userId)
+  return fromAccount?.name ?? "不明な利用者"
 }
 
 export function formatDate(iso: string): string {

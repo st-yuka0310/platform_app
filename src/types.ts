@@ -12,11 +12,18 @@ export type Campus = "荒牧" | "桐生" | "昭和"
 
 /** ラベルの分類。人にも投稿にも同じ分類を使う（企画書 §4） */
 export type LabelCategory =
-  | "学部学年"
+  | "学部"
+  | "学年"
   | "履修科目"
   | "課外活動"
   | "関心"
   | "キャンパス"
+
+/** 学部の固定4つ。プルダウンで単一選択する */
+export type Faculty = "医学部" | "情報学部" | "教育学部" | "理工学部"
+
+/** 学年もプルダウンで単一選択する */
+export type Grade = "1年" | "2年" | "3年" | "4年"
 
 /** LABEL テーブル */
 export interface Label {
