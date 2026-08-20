@@ -23,32 +23,32 @@ export const sampleReplies: Reply[] = [
     createdAt: "2026-08-11T20:00:00+09:00",
   },
 
-  // p5（留学の体験談）は情報の投稿なので、公開のやり取りが自然に成立する例
+  // p13（関数電卓）は、状態を尋ねるだけの質問なので公開のやり取りが自然に成立する例
   {
     id: "r3",
-    postId: "p5",
-    authorId: "u4",
-    body: "費用はどれくらいかかりましたか？",
+    postId: "p13",
+    authorId: "u1",
+    body: "電池はまだ交換していないものですか？",
     isPrivate: false,
-    createdAt: "2026-08-13T19:00:00+09:00",
+    createdAt: "2026-08-16T11:00:00+09:00",
   },
   {
     id: "r4",
-    postId: "p5",
-    authorId: "u2",
-    body: "総額でだいたい80万円でした。内訳は奨学金の説明会でも聞けますよ。",
+    postId: "p13",
+    authorId: "u3",
+    body: "はい、去年入れ替えたばかりです。",
     isPrivate: false,
-    createdAt: "2026-08-13T21:00:00+09:00",
+    createdAt: "2026-08-16T12:00:00+09:00",
   },
 
-  // p6（教職課程）にも公開の返信
+  // p3（引越し手伝い）にも公開の質問
   {
     id: "r5",
-    postId: "p6",
-    authorId: "u1",
-    body: "実習期間中はバイトを減らしている人が多いと聞きました。",
+    postId: "p3",
+    authorId: "u6",
+    body: "何時集合の予定ですか？",
     isPrivate: false,
-    createdAt: "2026-08-14T09:00:00+09:00",
+    createdAt: "2026-08-12T10:00:00+09:00",
   },
 
   // p4（実験の記録係）は手伝いの募集なので非公開で応募する例

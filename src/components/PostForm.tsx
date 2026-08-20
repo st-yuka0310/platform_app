@@ -2,7 +2,7 @@
  * 担当: A（投稿の作成画面。2軸の選択とタグ付け）
  *
  * 投稿は1種類だけで、違いは2軸（提供します/求めています ×
- * モノ/手伝い/情報）とタグだけ（企画書 §3）。別ページには移らず、
+ * モノ/手伝い）とタグだけ（企画書 §3）。別ページには移らず、
  * 画面の中に入力欄が開く（企画書 §5）。
  */
 import { useState } from "react"
@@ -10,7 +10,7 @@ import type { Label, Post, PostDirection, PostKind } from "../types"
 import { useViewer } from "../context/ViewerContext"
 
 const DIRECTIONS: PostDirection[] = ["提供します", "求めています"]
-const KINDS: PostKind[] = ["モノ", "手伝い", "情報"]
+const KINDS: PostKind[] = ["モノ", "手伝い"]
 
 export function PostForm({
   labels,

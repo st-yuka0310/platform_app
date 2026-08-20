@@ -40,9 +40,13 @@ export interface User {
   labelIds: string[]
 }
 
-/** 投稿を分類する2軸（企画書 §3 の6マス） */
+/**
+ * 投稿を分類する2軸（企画書 §3 の4マス）。
+ * 以前は PostKind に「情報」もあったが、学内である必然性が
+ * 一番弱いという理由で削った（README §3）。
+ */
 export type PostDirection = "提供します" | "求めています"
-export type PostKind = "モノ" | "手伝い" | "情報"
+export type PostKind = "モノ" | "手伝い"
 
 /** 受け渡しが済んだ投稿をタイムラインから止めるための状態（企画書 §8 付録B 理由5） */
 export type PostStatus = "募集中" | "やり取り中" | "完了"
