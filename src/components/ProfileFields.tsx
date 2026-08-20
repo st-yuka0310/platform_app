@@ -4,9 +4,14 @@
  *
  * 履修科目だけは「履修中／履修済み」の状態を持つので、他のラベル
  * （チップのオン・オフだけ）とは別の見せ方（状態を3つ巡回するボタン）にしている。
+ * 履修科目は数百件になりうるため、学部・学年で先に絞り込む
+ * lib/useCourseDrilldown.ts（CourseFinder・CourseTagPickerと共通）を使う。
  */
-import type { Campus, CourseStatus, Label, LabelCategory, UserCourse } from "../types"
+import { useState } from "react"
+import type { Campus, CourseStatus, LabelCategory, UserCourse } from "../types"
 import { sampleLabels } from "../data/labels"
+import { labelsInCategory } from "../lib/labels"
+import { useCourseDrilldown } from "../lib/useCourseDrilldown"
 
 const CAMPUSES: Campus[] = ["荒牧", "桐生", "昭和"]
 
@@ -17,14 +22,8 @@ const DROPDOWN_CATEGORIES: LabelCategory[] = ["学部", "学年"]
 // キャンパスは専用フィールドがあるのでここには含めない。履修科目は別枠。
 const MULTI_SELECT_CATEGORIES: LabelCategory[] = ["課外活動", "関心"]
 
-function labelsInCategory(category: LabelCategory): Label[] {
-  return sampleLabels.filter((l) => l.category === category)
-}
-
-const courseLabels = labelsInCategory("履修科目")
-
 function selectedIdIn(labelIds: string[], category: LabelCategory): string {
-  const ids = new Set(labelsInCategory(category).map((l) => l.id))
+  const ids = new Set(labelsInCategory(sampleLabels, category).map((l) => l.id))
   return labelIds.find((id) => ids.has(id)) ?? ""
 }
 
@@ -49,13 +48,24 @@ export function ProfileFields({
   onChange: (next: ProfileFieldsValue) => void
 }) {
   const { campus, labelIds, courses } = value
+  const [courseQuery, setCourseQuery] = useState("")
+  const {
+    facultyFilter,
+    setFacultyFilter,
+    gradeFilter,
+    setGradeFilter,
+    faculties,
+    grades,
+    hasAnyFilter,
+    narrowedLabels,
+  } = useCourseDrilldown(sampleLabels, courseQuery.trim())
 
   function setCampus(c: Campus) {
     onChange({ campus: c, labelIds, courses })
   }
 
   function setDropdownValue(category: LabelCategory, labelId: string) {
-    const ids = new Set(labelsInCategory(category).map((l) => l.id))
+    const ids = new Set(labelsInCategory(sampleLabels, category).map((l) => l.id))
     const withoutCategory = labelIds.filter((id) => !ids.has(id))
     onChange({
       campus,
@@ -112,7 +122,7 @@ export function ProfileFields({
             required
           >
             <option value="">選択してください</option>
-            {labelsInCategory(category).map((label) => (
+            {labelsInCategory(sampleLabels, category).map((label) => (
               <option key={label.id} value={label.id}>
                 {label.name}
               </option>
@@ -125,28 +135,99 @@ export function ProfileFields({
         <legend>
           履修科目（ボタンを押すたびに 未選択 → 履修中 → 履修済み と切り替わります）
         </legend>
-        <div className="post-form__tag-list">
-          {courseLabels.map((label) => {
-            const status = courseStatusOf(label.id)
-            const className =
-              status === "履修中"
-                ? "label-chip label-chip--on"
-                : status === "履修済み"
-                  ? "label-chip label-chip--done"
-                  : "label-chip label-chip--off"
-            return (
-              <button
-                key={label.id}
-                type="button"
-                className={className}
-                onClick={() => cycleCourse(label.id)}
-              >
-                {label.name}
-                {status ? `（${status}）` : ""}
-              </button>
-            )
-          })}
+
+        <div className="course-finder__filters">
+          <select
+            value={facultyFilter}
+            onChange={(e) => setFacultyFilter(e.target.value)}
+            aria-label="学部で絞り込む"
+          >
+            <option value="">学部：すべて</option>
+            {faculties.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
+            ))}
+          </select>
+          <select
+            value={gradeFilter}
+            onChange={(e) => setGradeFilter(e.target.value)}
+            aria-label="学年で絞り込む"
+          >
+            <option value="">学年：すべて</option>
+            {grades.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.name}
+              </option>
+            ))}
+          </select>
+          <input
+            type="text"
+            value={courseQuery}
+            onChange={(e) => setCourseQuery(e.target.value)}
+            placeholder="科目名で探す"
+            className="course-tag-picker__input"
+          />
         </div>
+
+        {!hasAnyFilter ? (
+          <p className="course-finder__empty">
+            学部・学年を選ぶか、科目名を入力してください。すでに履修中／履修済みにした科目は、絞り込まなくても下に残ります。
+          </p>
+        ) : (
+          <div className="post-form__tag-list">
+            {narrowedLabels.length === 0 && (
+              <p className="course-finder__empty">該当する科目がありません。</p>
+            )}
+            {narrowedLabels.map((label) => {
+              const status = courseStatusOf(label.id)
+              const className =
+                status === "履修中"
+                  ? "label-chip label-chip--on"
+                  : status === "履修済み"
+                    ? "label-chip label-chip--done"
+                    : "label-chip label-chip--off"
+              return (
+                <button
+                  key={label.id}
+                  type="button"
+                  className={className}
+                  onClick={() => cycleCourse(label.id)}
+                >
+                  {label.name}
+                  {status ? `（${status}）` : ""}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* 絞り込みで隠れていても、すでに履修中／履修済みにした科目は見失わないようここに残す */}
+        {courses.length > 0 && (
+          <>
+            <p className="label-filter-bar__heading">選択中の履修科目</p>
+            <div className="post-form__tag-list">
+              {courses.map((c) => {
+                const label = sampleLabels.find((l) => l.id === c.labelId)
+                if (!label) return null
+                const className =
+                  c.status === "履修中"
+                    ? "label-chip label-chip--on"
+                    : "label-chip label-chip--done"
+                return (
+                  <button
+                    key={c.labelId}
+                    type="button"
+                    className={className}
+                    onClick={() => cycleCourse(c.labelId)}
+                  >
+                    {label.name}（{c.status}）
+                  </button>
+                )
+              })}
+            </div>
+          </>
+        )}
       </fieldset>
 
       <fieldset className="post-form__tags">
@@ -155,7 +236,7 @@ export function ProfileFields({
           <div key={category}>
             <p className="label-filter-bar__heading">{category}</p>
             <div className="post-form__tag-list">
-              {labelsInCategory(category).map((label) => {
+              {labelsInCategory(sampleLabels, category).map((label) => {
                 const isOn = labelIds.includes(label.id)
                 return (
                   <button

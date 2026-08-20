@@ -5,10 +5,13 @@
  */
 import { useState } from "react"
 import type { Label, Post, PostDirection, PostKind, PostStatus } from "../types"
+import { LABEL_CATEGORIES, labelsInCategory } from "../lib/labels"
+import { CourseTagPicker } from "./CourseTagPicker"
 
 const DIRECTIONS: PostDirection[] = ["提供します", "求めています"]
-const KINDS: PostKind[] = ["モノ", "手伝い"]
+const KINDS: PostKind[] = ["モノ", "手伝い", "情報"]
 const STATUS_OPTIONS: PostStatus[] = ["募集中", "やり取り中", "完了"]
+const FLAT_TAG_CATEGORIES = LABEL_CATEGORIES.filter((c) => c !== "履修科目")
 
 export function PostEditForm({
   post,
@@ -178,24 +181,43 @@ export function PostEditForm({
 
       <fieldset className="post-form__tags">
         <legend>タグ</legend>
-        <div className="post-form__tag-list">
-          {labels.map((label) => {
-            const isOn = tagLabelIds.includes(label.id)
-            return (
-              <button
-                key={label.id}
-                type="button"
-                className={
-                  isOn ? "label-chip label-chip--on" : "label-chip label-chip--off"
-                }
-                aria-pressed={isOn}
-                onClick={() => toggleTag(label.id)}
-              >
-                {label.name}
-              </button>
-            )
-          })}
-        </div>
+
+        <p className="label-filter-bar__heading">履修科目</p>
+        <CourseTagPicker
+          labels={labels}
+          selectedLabelIds={tagLabelIds}
+          onToggle={toggleTag}
+        />
+
+        {FLAT_TAG_CATEGORIES.map((category) => {
+          const categoryLabels = labelsInCategory(labels, category)
+          if (categoryLabels.length === 0) return null
+          return (
+            <div key={category} className="label-search__category">
+              <p className="label-filter-bar__heading">{category}</p>
+              <div className="post-form__tag-list">
+                {categoryLabels.map((label) => {
+                  const isOn = tagLabelIds.includes(label.id)
+                  return (
+                    <button
+                      key={label.id}
+                      type="button"
+                      className={
+                        isOn
+                          ? "label-chip label-chip--on"
+                          : "label-chip label-chip--off"
+                      }
+                      aria-pressed={isOn}
+                      onClick={() => toggleTag(label.id)}
+                    >
+                      {label.name} {isOn ? "✓" : ""}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
       </fieldset>
 
       <div className="post-form__actions post-manager__form-actions">

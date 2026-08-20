@@ -1,7 +1,9 @@
 /**
  * 履修科目専用の探し方。他のカテゴリ（学部・課外活動・関心・キャンパスなど）は
  * LabelSearch.tsx のフラットなチップ＋キーワードのままでよいが、履修科目だけは
- * 現実には数千件になりうるため、学部・学年で先に絞り込んでから見せる。
+ * 現実には数千件になりうるため、学部・学年で先に絞り込んでから見せる
+ * （絞り込みそのものは lib/useCourseDrilldown.ts に共通化してあり、
+ * PostForm・ProfileFields でも同じロジックを使う）。
  *
  * 「投稿を絞り込むためにチップを選ぶ」操作と「シラバスを見る」操作は完全に別。
  * シラバスは、チップの隣にある ⓘ ボタンを押したときだけ、一覧の下に
@@ -9,7 +11,7 @@
  */
 import { useState } from "react"
 import type { Label, Post, PostStatus, Reply } from "../types"
-import { labelsInCategory } from "../lib/labels"
+import { useCourseDrilldown } from "../lib/useCourseDrilldown"
 import { sampleCourseInfos } from "../data/courseInfos"
 import { CourseInfoCard } from "./CourseInfoCard"
 import { PostCard } from "./PostCard"
@@ -33,30 +35,19 @@ export function CourseFinder({
   onAddReply: (reply: Reply) => void
   onChangeStatus: (postId: string, status: PostStatus) => void
 }) {
-  const [facultyFilter, setFacultyFilter] = useState("") // "" = すべて
-  const [gradeFilter, setGradeFilter] = useState("")
+  const {
+    facultyFilter,
+    setFacultyFilter,
+    gradeFilter,
+    setGradeFilter,
+    faculties,
+    grades,
+    hasAnyFilter,
+    narrowedLabels,
+  } = useCourseDrilldown(labels, query)
+
   const [viewingLabelId, setViewingLabelId] = useState<string | null>(null)
-
-  const faculties = labelsInCategory(labels, "学部")
-  const grades = labelsInCategory(labels, "学年")
   const selected = new Set(selectedLabelIds)
-
-  const narrowedCourses = sampleCourseInfos.filter(
-    (ci) =>
-      (!facultyFilter || ci.facultyId === facultyFilter) &&
-      (!gradeFilter || ci.gradeId === gradeFilter),
-  )
-
-  // 学部・学年のどちらも選ばず、キーワードも入れていない状態では一覧を出さない。
-  // 出してしまうと、ドリルダウンで防ぎたかった「一度に全件表示」に戻ってしまうため。
-  const hasAnyFilter = facultyFilter !== "" || gradeFilter !== "" || query !== ""
-
-  const narrowedLabels = hasAnyFilter
-    ? narrowedCourses
-        .map((ci) => labels.find((l) => l.id === ci.labelId))
-        .filter((l): l is Label => l !== undefined)
-        .filter((l) => l.name.includes(query))
-    : []
 
   const viewingInfo = viewingLabelId
     ? sampleCourseInfos.find((c) => c.labelId === viewingLabelId)

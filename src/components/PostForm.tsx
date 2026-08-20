@@ -2,15 +2,22 @@
  * 担当: A（投稿の作成画面。2軸の選択とタグ付け）
  *
  * 投稿は1種類だけで、違いは2軸（提供します/求めています ×
- * モノ/手伝い）とタグだけ（企画書 §3）。別ページには移らず、
+ * モノ/手伝い/情報）とタグだけ（企画書 §3）。別ページには移らず、
  * 画面の中に入力欄が開く（企画書 §5）。
+ *
+ * タグ選択は、履修科目だけ他のカテゴリと分けている。履修科目は
+ * 数百件になりうるため、学部・学年で先に絞り込む CourseTagPicker を使う
+ * （検索タブの CourseFinder と同じ絞り込みロジックを共有、lib/useCourseDrilldown.ts）。
  */
 import { useState } from "react"
 import type { Label, Post, PostDirection, PostKind } from "../types"
 import { useViewer } from "../context/ViewerContext"
+import { LABEL_CATEGORIES, labelsInCategory } from "../lib/labels"
+import { CourseTagPicker } from "./CourseTagPicker"
 
 const DIRECTIONS: PostDirection[] = ["提供します", "求めています"]
-const KINDS: PostKind[] = ["モノ", "手伝い"]
+const KINDS: PostKind[] = ["モノ", "手伝い", "情報"]
+const FLAT_TAG_CATEGORIES = LABEL_CATEGORIES.filter((c) => c !== "履修科目")
 
 export function PostForm({
   labels,
@@ -194,24 +201,43 @@ export function PostForm({
 
       <fieldset className="post-form__tags">
         <legend>タグ</legend>
-        <div className="post-form__tag-list">
-          {labels.map((label) => {
-            const isOn = tagLabelIds.includes(label.id)
-            return (
-              <button
-                key={label.id}
-                type="button"
-                className={
-                  isOn ? "label-chip label-chip--on" : "label-chip label-chip--off"
-                }
-                aria-pressed={isOn}
-                onClick={() => toggleTag(label.id)}
-              >
-                {label.name}
-              </button>
-            )
-          })}
-        </div>
+
+        <p className="label-filter-bar__heading">履修科目</p>
+        <CourseTagPicker
+          labels={labels}
+          selectedLabelIds={tagLabelIds}
+          onToggle={toggleTag}
+        />
+
+        {FLAT_TAG_CATEGORIES.map((category) => {
+          const categoryLabels = labelsInCategory(labels, category)
+          if (categoryLabels.length === 0) return null
+          return (
+            <div key={category} className="label-search__category">
+              <p className="label-filter-bar__heading">{category}</p>
+              <div className="post-form__tag-list">
+                {categoryLabels.map((label) => {
+                  const isOn = tagLabelIds.includes(label.id)
+                  return (
+                    <button
+                      key={label.id}
+                      type="button"
+                      className={
+                        isOn
+                          ? "label-chip label-chip--on"
+                          : "label-chip label-chip--off"
+                      }
+                      aria-pressed={isOn}
+                      onClick={() => toggleTag(label.id)}
+                    >
+                      {label.name} {isOn ? "✓" : ""}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
       </fieldset>
 
       <div className="post-form__actions">

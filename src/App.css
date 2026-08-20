@@ -387,6 +387,18 @@
   padding: 4px 6px;
 }
 
+.course-tag-picker {
+  margin-bottom: 10px;
+}
+
+.course-tag-picker__input {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 6px;
+  flex: 1;
+  min-width: 140px;
+}
+
 .course-finder__list {
   display: flex;
   flex-wrap: wrap;
