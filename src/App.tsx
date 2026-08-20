@@ -1,13 +1,11 @@
 import { useCallback, useMemo, useState } from "react"
 import type { PostStatus, Reply } from "./types"
-import type { CourseRequestMode } from "./lib/courseRequestFilter"
 import { AuthProvider, useAuth } from "./context/AuthContext"
 import { ViewerProvider, useViewer } from "./context/ViewerContext"
 import { usePosts } from "./hooks/usePosts"
 import { useReplies } from "./hooks/useReplies"
 import { sampleLabels } from "./data/labels"
 import { sampleAnnouncements } from "./data/announcements"
-import { resetToSampleData } from "./lib/storage"
 import { AnnouncementBanner } from "./components/AnnouncementBanner"
 import { LoginForm } from "./components/LoginForm"
 import { PostForm } from "./components/PostForm"
@@ -43,15 +41,6 @@ function AppInner() {
     )
     return viewer.labelIds.filter((id) => clubIds.has(id))
   }, [viewer.labelIds])
-
-  // 自分が履修中・履修済み、どちらかである講義のラベルID
-  // （「求めています」の講義投稿の表示切り替えに使う。履修中だけの enrolledCourseLabelIds とは別物）
-  const myCourseLabelIds = useMemo(
-    () => (viewer.courses ?? []).map((c) => c.labelId),
-    [viewer.courses],
-  )
-  const [courseRequestMode, setCourseRequestMode] =
-    useState<CourseRequestMode>("all")
 
   // 最初は、自分に付いているラベル＋履修中の科目で絞り込んだ状態から始める（企画書 §4）
   // （所属サークルは labelIds に含まれているのですでに入っている）
@@ -102,14 +91,6 @@ function AppInner() {
     [addReply],
   )
 
-  function handleReset() {
-    if (!confirm("投稿と返信を、最初のサンプルデータの状態に戻します。よろしいですか？")) {
-      return
-    }
-    resetToSampleData()
-    location.reload()
-  }
-
   return (
     <div className="app">
       <header className="app__header">
@@ -140,9 +121,6 @@ function AppInner() {
           </button>
           <button type="button" onClick={logout}>
             ログアウト
-          </button>
-          <button type="button" className="app__reset" onClick={handleReset}>
-            サンプルデータに戻す
           </button>
         </div>
       </header>
@@ -187,9 +165,6 @@ function AppInner() {
           onToggleEnrolledCourses={toggleEnrolledCourses}
           myClubLabelIds={myClubLabelIds}
           onToggleMyClubs={toggleMyClubs}
-          myCourseLabelIds={myCourseLabelIds}
-          courseRequestMode={courseRequestMode}
-          onChangeCourseRequestMode={setCourseRequestMode}
         />
       </section>
     </div>

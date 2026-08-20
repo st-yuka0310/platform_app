@@ -29,14 +29,6 @@
   padding: 2px 4px;
 }
 
-.app__reset {
-  border: 1px solid var(--border);
-  background: var(--surface);
-  border-radius: 6px;
-  padding: 4px 8px;
-  cursor: pointer;
-}
-
 .app__disclaimer {
   font-size: 0.75rem;
   color: var(--text-muted);
