@@ -9,11 +9,12 @@
  * チップ）とは別に、プルダウン（単一選択）で選ぶ。
  */
 import { useState } from "react"
-import type { Campus, Label, LabelCategory } from "../types"
+import type { Campus, LabelCategory } from "../types"
 import { sampleLabels } from "../data/labels"
 import { sampleUsers } from "../data/users"
 import { useAuth } from "../context/AuthContext"
 import { DEMO_ACCOUNT_PASSWORD } from "../lib/authStorage"
+import { labelsInCategory } from "../lib/labels"
 
 const CAMPUSES: Campus[] = ["荒牧", "桐生", "昭和"]
 
@@ -23,10 +24,6 @@ const DROPDOWN_CATEGORIES: LabelCategory[] = ["学部", "学年"]
 // チップ（複数選択）で選ぶカテゴリ。
 // キャンパスは User.campus という専用フィールドがすでにあるのでここには含めない。
 const MULTI_SELECT_CATEGORIES: LabelCategory[] = ["履修科目", "課外活動", "関心"]
-
-function labelsInCategory(category: LabelCategory): Label[] {
-  return sampleLabels.filter((l) => l.category === category)
-}
 
 export function LoginForm() {
   const { login, register } = useAuth()
@@ -39,12 +36,12 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null)
 
   function selectedIdIn(category: LabelCategory): string {
-    const ids = new Set(labelsInCategory(category).map((l) => l.id))
+    const ids = new Set(labelsInCategory(sampleLabels, category).map((l) => l.id))
     return labelIds.find((id) => ids.has(id)) ?? ""
   }
 
   function setDropdownValue(category: LabelCategory, labelId: string) {
-    const ids = new Set(labelsInCategory(category).map((l) => l.id))
+    const ids = new Set(labelsInCategory(sampleLabels, category).map((l) => l.id))
     setLabelIds((prev) => {
       const withoutCategory = prev.filter((id) => !ids.has(id))
       return labelId ? [...withoutCategory, labelId] : withoutCategory
@@ -132,7 +129,7 @@ export function LoginForm() {
                   required
                 >
                   <option value="">選択してください</option>
-                  {labelsInCategory(category).map((label) => (
+                  {labelsInCategory(sampleLabels, category).map((label) => (
                     <option key={label.id} value={label.id}>
                       {label.name}
                     </option>
@@ -149,7 +146,7 @@ export function LoginForm() {
                 <div key={category}>
                   <p className="label-filter-bar__heading">{category}</p>
                   <div className="post-form__tag-list">
-                    {labelsInCategory(category).map((label) => {
+                    {labelsInCategory(sampleLabels, category).map((label) => {
                       const isOn = labelIds.includes(label.id)
                       return (
                         <button

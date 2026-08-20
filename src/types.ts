@@ -87,3 +87,31 @@ export interface Announcement {
   body: string
   publishedAt: string
 }
+
+/**
+ * COURSE_INFO テーブル。履修科目ラベルに付く授業情報（試験の有無・授業計画など）。
+ * ANNOUNCEMENT と同じ固定サンプル扱いで、編集画面は作らない。
+ *
+ * 担当教員の連絡先（メール・電話・オフィスアワー等）に対応するフィールドは
+ * 意図的に持たせていない。型に置き場がないことで、実在の教員の個人情報が
+ * サンプルデータに紛れ込む余地をなくしている。
+ */
+export interface CourseInfo {
+  id: string
+  /** 対応する Label.id（category === "履修科目"） */
+  labelId: string
+  courseCode: string
+  /** 架空の担当教員名 */
+  instructor: string
+  term: string
+  targetGrade: string
+  credits: number
+  hasExam: boolean
+  /** 試験の配点など。任意 */
+  examWeight?: string
+  /** 16回分の表ではなく、1つの文章にまとめる */
+  scheduleOverview: string
+  evaluationMethod: string
+  textbook?: string
+  syllabusOverview: string
+}

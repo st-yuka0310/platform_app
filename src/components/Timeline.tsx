@@ -2,11 +2,13 @@
  * 担当: B（タイムラインの表示と、ラベルによる絞り込み）
  *
  * ラベルで絞り込んだ投稿に、Cの担当（範囲外を2割まぜる）を適用してから並べる。
+ * 最後に「提供します」「求めています」で2つに分けて表示する。
  */
 import { useMemo, useState } from "react"
 import type { Label, Post, PostStatus, Reply } from "../types"
 import { filterPostsByLabels } from "../lib/timelineFilter"
 import { mixInOutsideRange } from "../lib/timelineMix"
+import { LabelSearch } from "./LabelSearch"
 import { LabelFilterBar } from "./LabelFilterBar"
 import { PostCard } from "./PostCard"
 
@@ -53,8 +55,26 @@ export function Timeline({
     return mixInOutsideRange(matched, sorted)
   }, [matched, sorted, mixEnabled, selectedLabelIds])
 
+  // 「提供します」「求めています」で見た目を分ける。
+  // 混ぜる処理のあと（displayedが確定したあと）に分けるだけなので、
+  // timelineFilter.ts / timelineMix.ts はどちらも変更していない。
+  const offering = useMemo(
+    () => displayed.filter((p) => p.direction === "提供します"),
+    [displayed],
+  )
+  const wanted = useMemo(
+    () => displayed.filter((p) => p.direction === "求めています"),
+    [displayed],
+  )
+
   return (
     <section className="timeline" aria-label="タイムライン">
+      <LabelSearch
+        labels={labels}
+        selectedLabelIds={selectedLabelIds}
+        onToggle={onToggleLabel}
+      />
+
       <LabelFilterBar
         labels={labels}
         selectedLabelIds={selectedLabelIds}
@@ -73,13 +93,51 @@ export function Timeline({
         </label>
       )}
 
+      <div className="timeline__groups">
+        <TimelineGroup
+          heading="提供します"
+          posts={offering}
+          replies={replies}
+          onAddReply={onAddReply}
+          onChangeStatus={onChangeStatus}
+          emptyMessage="該当する「提供します」の投稿がありません。"
+        />
+        <TimelineGroup
+          heading="求めています"
+          posts={wanted}
+          replies={replies}
+          onAddReply={onAddReply}
+          onChangeStatus={onChangeStatus}
+          emptyMessage="該当する「求めています」の投稿がありません。"
+        />
+      </div>
+    </section>
+  )
+}
+
+function TimelineGroup({
+  heading,
+  posts,
+  replies,
+  onAddReply,
+  onChangeStatus,
+  emptyMessage,
+}: {
+  heading: string
+  posts: Post[]
+  replies: Reply[]
+  onAddReply: (reply: Reply) => void
+  onChangeStatus: (postId: string, status: PostStatus) => void
+  emptyMessage: string
+}) {
+  return (
+    <section className="timeline__group" aria-label={heading}>
+      <h3 className="timeline__group-heading">{heading}</h3>
       <ul className="timeline__list">
-        {displayed.length === 0 && (
-          <li className="timeline__empty">
-            表示できる投稿がありません。ラベルを見直してください。
-          </li>
+        {posts.length === 0 && (
+          <li className="timeline__empty">{emptyMessage}</li>
         )}
-        {displayed.map((post) => (
+        {posts.map((post) => (
           <li key={post.id}>
             <PostCard
               post={post}

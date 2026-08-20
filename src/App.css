@@ -314,7 +314,120 @@
   margin-bottom: 8px;
 }
 
+/* --- ラベルを探す --- */
+
+.label-search__open {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.label-search {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.label-search__header {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.label-search__input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.label-search__close {
+  border: none;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+
+.label-search__category {
+  margin-bottom: 10px;
+}
+
+.label-search__category:last-child {
+  margin-bottom: 0;
+}
+
+/* --- 授業情報 --- */
+
+.course-info-card {
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--bg);
+  font-size: 0.85rem;
+}
+
+.course-info-card__header {
+  margin: 0 0 4px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.course-info-card__exam {
+  margin: 0 0 8px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.course-info-card__body {
+  margin: 0;
+}
+
+.course-info-card__body dt {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.course-info-card__body dt:first-child {
+  margin-top: 0;
+}
+
+.course-info-card__body dd {
+  margin: 2px 0 0;
+}
+
+.course-info-card__instructor {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
 /* --- タイムライン --- */
+
+.timeline__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.timeline__group-heading {
+  font-size: 0.95rem;
+  margin: 0 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
 
 .timeline__list {
   list-style: none;
