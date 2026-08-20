@@ -44,7 +44,14 @@ export function PostForm({
       ? "0円以上を入力してください"
       : null
 
-  const isValid = title.trim() !== "" && place.trim() !== "" && priceError === null
+  // 場所は「モノ」「手伝い」では受け渡し・待ち合わせのために必須だが、
+  // 「情報」はオンラインでも成立するやり取りなので必須にしない
+  const placeRequired = kind !== "情報"
+
+  const isValid =
+    title.trim() !== "" &&
+    (!placeRequired || place.trim() !== "") &&
+    priceError === null
 
   function toggleTag(labelId: string) {
     setTagLabelIds((prev) =>
@@ -187,14 +194,18 @@ export function PostForm({
       </div>
 
       <label className="post-form__field">
-        受け渡し・やり取りの場所
+        受け渡し・やり取りの場所{!placeRequired && "（任意）"}
         <input
           value={place}
           onChange={(e) => setPlace(e.target.value)}
-          placeholder="荒牧 / オンライン可 など"
-          aria-invalid={showErrors && !place.trim()}
+          placeholder={
+            placeRequired
+              ? "荒牧 / オンライン可 など"
+              : "対面で話したい場合だけ入力してください"
+          }
+          aria-invalid={showErrors && placeRequired && !place.trim()}
         />
-        {showErrors && !place.trim() && (
+        {showErrors && placeRequired && !place.trim() && (
           <span className="post-form__error">受け渡し・やり取りの場所を入力してください</span>
         )}
       </label>

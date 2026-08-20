@@ -49,7 +49,9 @@ export function PostCard({
       <p className="post-card__body">{post.body}</p>
 
       <p className="post-card__meta">
-        {post.place}／{userName(post.authorId)}／{formatDate(post.createdAt)}
+        {[post.place, userName(post.authorId), formatDate(post.createdAt)]
+          .filter((part) => part !== "")
+          .join("／")}
       </p>
 
       <ul className="post-card__tags">
