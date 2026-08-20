@@ -71,14 +71,27 @@ export function LabelFilterBar({
     (l) => l.category !== "履修科目" && l.category !== "課外活動",
   )
 
+  // 🔍ラベルを探す（CourseFinder・LabelSearchの履修科目/課外活動チップ）で、
+  // 「履修中の講義」「所属サークル」に含まれない科目・サークルを絞り込み条件として
+  // 選んだ場合、ここに出さないと「表示中のラベル」欄のどこにも出てこず、閉じたあと
+  // 何が効いているのか分からなくなる（README §9 参照）。個別チップとして表示する。
+  const extraLabels = labels.filter(
+    (l) =>
+      (l.category === "履修科目" || l.category === "課外活動") &&
+      selected.has(l.id) &&
+      !enrolledCourseLabelIds.includes(l.id) &&
+      !myClubLabelIds.includes(l.id),
+  )
+
   // 「すべて表示」ボタンで全部ON/全部OFFを切り替える対象。
   // ここに並んでいるチップ（学部・学年・関心・キャンパスの個別ボタン＋
-  // 履修中の講義／所属サークルのまとめボタンの中身）が対象で、
-  // 検索（🔍 ラベルを探す）でしか出てこない履修科目の全件は含めない。
+  // 履修中の講義／所属サークルのまとめボタンの中身＋上のextraLabels）が対象で、
+  // 検索（🔍 ラベルを探す）でしか出てこない履修科目・課外活動の全件は含めない。
   const allVisibleIds = [
     ...otherLabels.map((l) => l.id),
     ...enrolledCourseLabelIds,
     ...myClubLabelIds,
+    ...extraLabels.map((l) => l.id),
   ]
   const allSelected =
     allVisibleIds.length > 0 && allVisibleIds.every((id) => selected.has(id))
@@ -99,6 +112,18 @@ export function LabelFilterBar({
           selectedLabelIds={selectedLabelIds}
           onToggle={onToggleMyClubs}
         />
+
+        {extraLabels.map((label) => (
+          <button
+            key={label.id}
+            type="button"
+            className="label-chip label-chip--on"
+            aria-pressed={true}
+            onClick={() => onToggle(label.id)}
+          >
+            {label.name} ✓
+          </button>
+        ))}
 
         {otherLabels.map((label) => {
           const isOn = selected.has(label.id)

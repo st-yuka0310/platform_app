@@ -252,6 +252,12 @@ export function PostForm({
             </div>
           )
         })}
+
+        {tagLabelIds.length === 0 && (
+          <p className="post-form__hint">
+            タグを1つも選んでいません。今の絞り込み条件によっては、投稿後にタイムラインで見えなくなることがあります。
+          </p>
+        )}
       </fieldset>
 
       <label className="post-form__anonymous">

@@ -29,6 +29,12 @@ export function CourseTagPicker({
   } = useCourseDrilldown(labels, query.trim())
   const selected = new Set(selectedLabelIds)
 
+  // 絞り込み条件を変えると一覧から消えてしまうので、すでに選んでいる科目は
+  // 学部・学年の絞り込みに関わらずここに残す（ProfileFields の「選択中の履修科目」と同じ考え方）
+  const selectedCourseLabels = labels.filter(
+    (l) => l.category === "履修科目" && selected.has(l.id),
+  )
+
   return (
     <div className="course-tag-picker">
       <div className="course-finder__filters">
@@ -90,6 +96,25 @@ export function CourseTagPicker({
             )
           })}
         </div>
+      )}
+
+      {selectedCourseLabels.length > 0 && (
+        <>
+          <p className="label-filter-bar__heading">選択中の履修科目</p>
+          <div className="post-form__tag-list">
+            {selectedCourseLabels.map((label) => (
+              <button
+                key={label.id}
+                type="button"
+                className="label-chip label-chip--on"
+                aria-pressed={true}
+                onClick={() => onToggle(label.id)}
+              >
+                {label.name} ✓
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   )
