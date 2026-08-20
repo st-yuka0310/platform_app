@@ -47,10 +47,16 @@ export function CourseFinder({
       (!gradeFilter || ci.gradeId === gradeFilter),
   )
 
-  const narrowedLabels = narrowedCourses
-    .map((ci) => labels.find((l) => l.id === ci.labelId))
-    .filter((l): l is Label => l !== undefined)
-    .filter((l) => l.name.includes(query))
+  // 学部・学年のどちらも選ばず、キーワードも入れていない状態では一覧を出さない。
+  // 出してしまうと、ドリルダウンで防ぎたかった「一度に全件表示」に戻ってしまうため。
+  const hasAnyFilter = facultyFilter !== "" || gradeFilter !== "" || query !== ""
+
+  const narrowedLabels = hasAnyFilter
+    ? narrowedCourses
+        .map((ci) => labels.find((l) => l.id === ci.labelId))
+        .filter((l): l is Label => l !== undefined)
+        .filter((l) => l.name.includes(query))
+    : []
 
   const viewingInfo = viewingLabelId
     ? sampleCourseInfos.find((c) => c.labelId === viewingLabelId)
@@ -93,7 +99,11 @@ export function CourseFinder({
         </select>
       </div>
 
-      {narrowedLabels.length === 0 ? (
+      {!hasAnyFilter ? (
+        <p className="course-finder__empty">
+          学部・学年を選ぶか、キーワードを入力してください。
+        </p>
+      ) : narrowedLabels.length === 0 ? (
         <p className="course-finder__empty">該当する科目がありません。</p>
       ) : (
         <div className="course-finder__list">
