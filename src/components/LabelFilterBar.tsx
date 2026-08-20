@@ -1,14 +1,18 @@
 /**
  * 担当: B（タイムラインの表示と、ラベルによる絞り込み）
  *
- * 表示中のラベルを切り替えるボタン列（企画書 §5）。
+ * 「今、絞り込み条件として選ばれているラベル」だけを並べる（企画書 §5）。
  * ここで選ばれたラベルを timelineFilter.ts に渡して絞り込む。
+ * 選ばれていないラベルは並べない。新しく条件を足すのは🔍ラベルを探す側の
+ * 役目（表示中のラベル欄は「今の状態を見て、外す」ための場所）。チップを
+ * 押すと選択を外せる。
  *
- * 履修科目・課外活動は、大学全体の講義・サークル数が多く1つずつ選ぶのが
- * 非現実的なので、それぞれ「履修中の講義」「所属サークル」という1つの
- * ボタンにまとめている。押すと、自分に関係するタグをまとめて選択／解除する
- * （企画書 §4 の絞り込みの延長）。学部・学年・関心・キャンパスは、
- * これまで通り1つずつのボタン。
+ * ただし「履修中の講義」「所属サークル」の2つのまとめボタンは例外で、
+ * オフのときも常に表示する。これはプロフィール登録で自分が選んだ「自分が
+ * 誰か」を表す情報なので、絞り込みをオフにしていても、いつでもワンクリックで
+ * 自分の既定条件に戻せるようにするため。履修科目・課外活動は、大学全体の
+ * 講義・サークル数が多く1つずつボタンにするのは非現実的なので、この2つに
+ * まとめている（企画書 §4 の絞り込みの延長）。
  */
 import type { Label } from "../types"
 
@@ -71,6 +75,11 @@ export function LabelFilterBar({
     (l) => l.category !== "履修科目" && l.category !== "課外活動",
   )
 
+  // このバーには「今選ばれているもの」だけを出す。選ばれていない学部・学年・
+  // 関心・キャンパスまで常に並べると、候補が増えるほど埋もれて見づらくなる上、
+  // 🔍ラベルを探すと同じチップが二重に出ることになる。
+  const activeOtherLabels = otherLabels.filter((l) => selected.has(l.id))
+
   // 🔍ラベルを探す（CourseFinder・LabelSearchの履修科目/課外活動チップ）で、
   // 「履修中の講義」「所属サークル」に含まれない科目・サークルを絞り込み条件として
   // 選んだ場合、ここに出さないと「表示中のラベル」欄のどこにも出てこず、閉じたあと
@@ -82,6 +91,10 @@ export function LabelFilterBar({
       !enrolledCourseLabelIds.includes(l.id) &&
       !myClubLabelIds.includes(l.id),
   )
+
+  // バーに出す「選択中」チップ（学部・学年・関心・キャンパス＋上のextraLabels）。
+  // どちらも見た目・挙動は同じ（押すと外れる）ので1つにまとめて描画する。
+  const activeChips = [...activeOtherLabels, ...extraLabels]
 
   // 「すべて表示」ボタンで全部ON/全部OFFを切り替える対象。
   // ここに並んでいるチップ（学部・学年・関心・キャンパスの個別ボタン＋
@@ -113,7 +126,7 @@ export function LabelFilterBar({
           onToggle={onToggleMyClubs}
         />
 
-        {extraLabels.map((label) => (
+        {activeChips.map((label) => (
           <button
             key={label.id}
             type="button"
@@ -124,25 +137,6 @@ export function LabelFilterBar({
             {label.name} ✓
           </button>
         ))}
-
-        {otherLabels.map((label) => {
-          const isOn = selected.has(label.id)
-          return (
-            <button
-              key={label.id}
-              type="button"
-              className={
-                isOn
-                  ? "label-chip label-chip--on"
-                  : "label-chip label-chip--off"
-              }
-              aria-pressed={isOn}
-              onClick={() => onToggle(label.id)}
-            >
-              {label.name} {isOn ? "✓" : ""}
-            </button>
-          )
-        })}
         <button
           type="button"
           className="label-filter-bar__clear"
