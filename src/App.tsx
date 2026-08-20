@@ -8,6 +8,7 @@ import { sampleLabels } from "./data/labels"
 import { sampleAnnouncements } from "./data/announcements"
 import { AnnouncementBanner } from "./components/AnnouncementBanner"
 import { LoginForm } from "./components/LoginForm"
+import { NotificationBell } from "./components/NotificationBell"
 import { PostForm } from "./components/PostForm"
 import { PostManager } from "./components/PostManager"
 import { ProfileEditor } from "./components/ProfileEditor"
@@ -97,6 +98,7 @@ function AppInner() {
         <h1 className="app__heading">学内タイムライン</h1>
         <div className="app__header-controls">
           <span className="app__current-user">{viewer.name} としてログイン中</span>
+          <NotificationBell posts={posts} replies={replies} />
           <button
             type="button"
             onClick={() =>
