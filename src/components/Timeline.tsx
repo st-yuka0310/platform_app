@@ -17,7 +17,7 @@
  * 選ばれた側に偏ると片方のタブが0件になりうる）が見つかり、直すより先に
  * 削除した（README §8 参照）。
  */
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import type { Label, Post, PostDirection, PostStatus, Reply } from "../types"
 import { filterPostsByLabels } from "../lib/timelineFilter"
 import { LabelSearch } from "./LabelSearch"
@@ -37,6 +37,9 @@ export function Timeline({
   onToggleEnrolledCourses,
   myClubLabelIds,
   onToggleMyClubs,
+  onClearAllLabels,
+  jumpToPostId,
+  onJumpHandled,
 }: {
   posts: Post[]
   replies: Reply[]
@@ -51,6 +54,12 @@ export function Timeline({
   onToggleEnrolledCourses: () => void
   myClubLabelIds: string[]
   onToggleMyClubs: () => void
+  /** ラベルの絞り込みを全部外す（通知からのジャンプ先が絞り込みで隠れないよう保証する） */
+  onClearAllLabels: () => void
+  /** 通知などから「この投稿を見る」が押されたときの投稿id */
+  jumpToPostId: string | null
+  /** ジャンプ処理を終えたら呼ぶ（同じidで再ジャンプが起きないようにする） */
+  onJumpHandled: () => void
 }) {
   // 完了した投稿はタイムラインに流し続けない（企画書 §8 付録B 理由5）
   const activePosts = useMemo(
@@ -90,6 +99,37 @@ export function Timeline({
     setActiveTab(tab)
     setSearchOpen(false)
   }
+
+  // 通知などから「この投稿を見る」が押されたときのジャンプ先。投稿の方向に
+  // タブを合わせ、絞り込み条件で隠れないようラベルを全部外し、検索オーバーレイも
+  // 閉じる。実際のスクロールは、タブ・絞り込みの変更でリストが確定してから行う
+  // （下のuseEffect）。
+  const [highlightedPostId, setHighlightedPostId] = useState<string | null>(null)
+  const postRefs = useRef<Record<string, HTMLLIElement | null>>({})
+
+  useEffect(() => {
+    if (!jumpToPostId) return
+    const target = posts.find((p) => p.id === jumpToPostId)
+    if (target) {
+      setActiveTab(target.direction)
+      setSearchOpen(false)
+      onClearAllLabels()
+      setHighlightedPostId(jumpToPostId)
+    }
+    onJumpHandled()
+    // jumpToPostIdが変わった瞬間だけ処理する。postsやonClearAllLabelsなどを
+    // 依存に含めると、投稿の追加・絞り込み変更のたびに再実行されてしまう。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jumpToPostId])
+
+  useEffect(() => {
+    if (!highlightedPostId) return
+    const el = postRefs.current[highlightedPostId]
+    el?.scrollIntoView({ behavior: "smooth", block: "center" })
+    const timer = setTimeout(() => setHighlightedPostId(null), 2000)
+    return () => clearTimeout(timer)
+    // activePostsForTabの中身が確定してからスクロールしたいので、これも依存に含める
+  }, [highlightedPostId, activePostsForTab])
 
   return (
     <section className="timeline" aria-label="タイムライン">
@@ -140,7 +180,15 @@ export function Timeline({
           </li>
         )}
         {activePostsForTab.map((post) => (
-          <li key={post.id}>
+          <li
+            key={post.id}
+            ref={(el) => {
+              postRefs.current[post.id] = el
+            }}
+            className={
+              highlightedPostId === post.id ? "timeline__item--highlight" : undefined
+            }
+          >
             <PostCard
               post={post}
               replies={replies}

@@ -16,9 +16,12 @@ import { displayAuthorName, formatDateTime } from "../lib/format"
 export function NotificationBell({
   posts,
   replies,
+  onSelectPost,
 }: {
   posts: Post[]
   replies: Reply[]
+  /** 通知の投稿を選んだときに、その投稿のidを渡す（Timelineへジャンプする） */
+  onSelectPost: (postId: string) => void
 }) {
   const { viewerId } = useViewer()
   const [open, setOpen] = useState(false)
@@ -57,15 +60,24 @@ export function NotificationBell({
           ) : (
             <ul className="notification-bell__list">
               {notifications.map((n) => (
-                <li key={n.reply.id} className="notification-bell__item">
-                  <span className="notification-bell__author">
-                    {displayAuthorName(n.reply.authorId, n.reply.isAnonymous, viewerId)}
-                  </span>
-                  さんが「{n.post.title}」に返信
-                  <p className="notification-bell__body">{n.reply.body}</p>
-                  <span className="notification-bell__date">
-                    {formatDateTime(n.reply.createdAt)}
-                  </span>
+                <li key={n.reply.id}>
+                  <button
+                    type="button"
+                    className="notification-bell__item"
+                    onClick={() => {
+                      onSelectPost(n.post.id)
+                      setOpen(false)
+                    }}
+                  >
+                    <span className="notification-bell__author">
+                      {displayAuthorName(n.reply.authorId, n.reply.isAnonymous, viewerId)}
+                    </span>
+                    さんが「{n.post.title}」に返信
+                    <p className="notification-bell__body">{n.reply.body}</p>
+                    <span className="notification-bell__date">
+                      {formatDateTime(n.reply.createdAt)}
+                    </span>
+                  </button>
                 </li>
               ))}
             </ul>

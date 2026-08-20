@@ -82,6 +82,17 @@ function AppInner() {
 
   const toggleAll = useCallback((ids: string[]) => toggleGroup(ids), [])
 
+  // ラベルの絞り込みを全部外す。通知から投稿へジャンプするときに、絞り込み条件で
+  // 隠れて見えない、ということが起きないよう保証するために使う（README §7）。
+  const clearAllLabels = useCallback(() => setSelectedLabelIds([]), [])
+
+  // 通知の一覧で投稿を選ぶと、その投稿のidをここに置く。Timeline側で拾って
+  // タブ切り替え・絞り込み解除・スクロールをまとめて行う（NotificationBellと
+  // Timelineは兄弟コンポーネントで直接やり取りできないため、Appで仲介する）。
+  const [jumpToPostId, setJumpToPostId] = useState<string | null>(null)
+  const handleSelectPost = useCallback((postId: string) => setJumpToPostId(postId), [])
+  const handleJumpHandled = useCallback(() => setJumpToPostId(null), [])
+
   const handleChangeStatus = useCallback(
     (postId: string, status: PostStatus) => updatePost(postId, { status }),
     [updatePost],
@@ -98,7 +109,11 @@ function AppInner() {
         <h1 className="app__heading">学内タイムライン</h1>
         <div className="app__header-controls">
           <span className="app__current-user">{viewer.name} としてログイン中</span>
-          <NotificationBell posts={posts} replies={replies} />
+          <NotificationBell
+            posts={posts}
+            replies={replies}
+            onSelectPost={handleSelectPost}
+          />
           <button
             type="button"
             onClick={() =>
@@ -167,6 +182,9 @@ function AppInner() {
           onToggleEnrolledCourses={toggleEnrolledCourses}
           myClubLabelIds={myClubLabelIds}
           onToggleMyClubs={toggleMyClubs}
+          onClearAllLabels={clearAllLabels}
+          jumpToPostId={jumpToPostId}
+          onJumpHandled={handleJumpHandled}
         />
       </section>
     </div>

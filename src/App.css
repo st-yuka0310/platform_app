@@ -96,12 +96,24 @@
 }
 
 .notification-bell__item {
-  font-size: 0.8rem;
+  display: block;
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: none;
+  border: none;
   border-bottom: 1px dashed var(--border);
-  padding-bottom: 8px;
+  padding: 0 0 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
 }
 
-.notification-bell__item:last-child {
+.notification-bell__item:hover {
+  color: var(--accent);
+}
+
+.notification-bell__list li:last-child .notification-bell__item {
   border-bottom: none;
   padding-bottom: 0;
 }
@@ -622,6 +634,23 @@
   color: var(--text-muted);
   padding: 24px 0;
   text-align: center;
+}
+
+/* 通知から投稿へジャンプしたときに、一瞬だけ目印として光らせる */
+.timeline__item--highlight {
+  border-radius: 10px;
+  animation: timeline-highlight-fade 2s ease-out;
+}
+
+@keyframes timeline-highlight-fade {
+  0% {
+    background: #fff3b0;
+    box-shadow: 0 0 0 4px #fff3b0;
+  }
+  100% {
+    background: transparent;
+    box-shadow: 0 0 0 4px transparent;
+  }
 }
 
 /* --- ラベルを探す（右下アイコン＋オーバーレイ） --- */
