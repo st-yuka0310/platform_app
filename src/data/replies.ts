@@ -62,4 +62,26 @@ export const sampleReplies: Reply[] = [
     isPrivate: true,
     createdAt: "2026-08-13T08:00:00+09:00",
   },
+
+  // p21（データベースの演習、質問に答えます）に非公開で応募。
+  // u5（伊藤蓮）の投稿に返信が付く、通知デモの例
+  {
+    id: "r7",
+    postId: "p21",
+    authorId: "u1",
+    body: "来週の水曜、質問してもいいですか？",
+    isPrivate: true,
+    createdAt: "2026-08-19T20:00:00+09:00",
+  },
+
+  // p25（自転車の空気入れ貸します）に公開で質問。
+  // u6（渡辺葵）の投稿に返信が付く、通知デモの例
+  {
+    id: "r8",
+    postId: "p25",
+    authorId: "u4",
+    body: "何時ごろなら借りられますか？",
+    isPrivate: false,
+    createdAt: "2026-08-20T14:00:00+09:00",
+  },
 ]
